@@ -40,13 +40,12 @@ public class CmdLineAppBuilder {
 			Option.builder(name.substring(0, 1).toLowerCase())
 				.longOpt(name)
 				.desc(description)
-//				.type(Boolean.class)
 			.build()
 		);
 		return this;
 	}
 
-	CmdLineAppBuilder withEntryPoint(CmdLineAppEntryPoint<CommandLine> entryPoint) {
+	public CmdLineAppBuilder withEntryPoint(CmdLineAppEntryPoint<CommandLine> entryPoint) {
 		this.entryPoint = entryPoint;
 		return this;
 	}

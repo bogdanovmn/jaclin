@@ -3,6 +3,7 @@ package com.github.bogdanovmn.cmdlineapp;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 public class CmdLineAppBuilderTest {
 	@Test
@@ -12,7 +13,7 @@ public class CmdLineAppBuilderTest {
 			.withFlag("bool-flag", "bool-flag description")
 			.withEntryPoint(cmdLine -> {
 				assertEquals("123", cmdLine.getOptionValue("i"));
-				assertEquals("true", cmdLine.getOptionValue("b"));
+				assertTrue(cmdLine.hasOption("b"));
 			})
 			.build()
 				.run();
