@@ -11,7 +11,7 @@ public class CmdLineApp {
 		this.cmdLineArgs = cmdLineArgs;
 	}
 
-	public void run() {
+	public void run() throws Exception {
 		this.entryPoint.execute(this.cmdLineArgs);
 	}
 }

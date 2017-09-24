@@ -1,5 +1,5 @@
 package com.github.bogdanovmn.cmdlineapp;
 
-interface CmdLineAppEntryPoint<T> {
-	void execute(T t);
+public interface CmdLineAppEntryPoint<T> {
+	void execute(T t) throws Exception;
 }
