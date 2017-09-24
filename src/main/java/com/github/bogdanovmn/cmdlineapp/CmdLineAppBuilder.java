@@ -35,6 +35,17 @@ public class CmdLineAppBuilder {
 		return this;
 	}
 
+	public CmdLineAppBuilder withFlag(String name, String description) {
+		this.options.addOption(
+			Option.builder(name.substring(0, 1).toLowerCase())
+				.longOpt(name)
+				.desc(description)
+//				.type(Boolean.class)
+			.build()
+		);
+		return this;
+	}
+
 	CmdLineAppBuilder withEntryPoint(CmdLineAppEntryPoint<CommandLine> entryPoint) {
 		this.entryPoint = entryPoint;
 		return this;
