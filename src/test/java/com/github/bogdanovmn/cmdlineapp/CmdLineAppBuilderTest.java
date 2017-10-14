@@ -7,7 +7,7 @@ import static org.junit.Assert.assertTrue;
 
 public class CmdLineAppBuilderTest {
 	@Test
-	public void build() {
+	public void build() throws Exception {
 		new CmdLineAppBuilder(new String[] {"-i", "123", "-b"})
 			.withArg("integer", "source arg description")
 			.withFlag("bool-flag", "bool-flag description")
