@@ -6,7 +6,7 @@
 
 	<groupId>com.github.bogdanovmn.cmdline</groupId>
 	<artifactId>cmdline-app</artifactId>
-	<version>1.0-SNAPSHOT</version>
+	<version>1.0</version>
 
 	<properties>
 		<encoding>UTF-8</encoding>
@@ -42,5 +42,12 @@
 			</plugin>
 		</plugins>
 	</build>
+
+	<distributionManagement>
+		<repository>
+			<id>bintray-repo-maven</id>
+			<url>https://api.bintray.com/maven/bogdanovmn/maven-repo/java-cmdline-app/;publish=1</url>
+		</repository>
+	</distributionManagement>
 
 </project>
