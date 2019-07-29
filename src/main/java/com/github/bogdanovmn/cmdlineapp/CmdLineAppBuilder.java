@@ -2,12 +2,16 @@ package com.github.bogdanovmn.cmdlineapp;
 
 import org.apache.commons.cli.*;
 
+import java.util.*;
+import java.util.stream.Collectors;
+
 public class CmdLineAppBuilder {
 	private final String[] args;
-	private final Options options = new Options();
+	private Set<String> atLeastOneRequiredOption;
+	private final Map<String, Option> optionMap = new HashMap<>();
 	private String jarName = "<app-name>";
 	private String description = "";
-	private CmdLineAppEntryPoint<CommandLine> entryPoint;
+	private CmdLineAppEntryPoint entryPoint;
 
 	public CmdLineAppBuilder(String[] args) {
 		this.args = args;
@@ -23,8 +27,17 @@ public class CmdLineAppBuilder {
 		return this;
 	}
 
-	public CmdLineAppBuilder withArg(String name, String description) {
-		this.options.addOption(
+	public CmdLineAppBuilder withCustomOption(Option option) {
+		if (option.getLongOpt() == null) {
+			throw new IllegalStateException("You should define a long option name for " + option);
+		}
+		optionMap.put(option.getLongOpt(), option);
+		return this;
+	}
+
+	public CmdLineAppBuilder withRequiredArg(String name, String description) {
+		optionMap.put(
+			name,
 			Option.builder(name.substring(0, 1).toLowerCase())
 				.longOpt(name)
 				.hasArg().argName("ARG")
@@ -35,8 +48,21 @@ public class CmdLineAppBuilder {
 		return this;
 	}
 
+	public CmdLineAppBuilder withArg(String name, String description) {
+		optionMap.put(
+			name,
+			Option.builder(name.substring(0, 1).toLowerCase())
+				.longOpt(name)
+				.hasArg().argName("ARG")
+				.desc(description)
+				.build()
+		);
+		return this;
+	}
+
 	public CmdLineAppBuilder withFlag(String name, String description) {
-		this.options.addOption(
+		optionMap.put(
+			name,
 			Option.builder(name.substring(0, 1).toLowerCase())
 				.longOpt(name)
 				.desc(description)
@@ -45,21 +71,43 @@ public class CmdLineAppBuilder {
 		return this;
 	}
 
-	public CmdLineAppBuilder withEntryPoint(CmdLineAppEntryPoint<CommandLine> entryPoint) {
+	public CmdLineAppBuilder withAtLeastOneRequiredOption(String... options) {
+		atLeastOneRequiredOption = new HashSet<>(Arrays.asList(options));
+		return this;
+	}
+
+	public CmdLineAppBuilder withEntryPoint(CmdLineAppEntryPoint entryPoint) {
 		this.entryPoint = entryPoint;
 		return this;
 	}
 
 	public CmdLineApp build() {
 		try {
-			return new CmdLineApp(
-				entryPoint,
-				new DefaultParser()
-					.parse(this.options, this.args)
-			);
+			CommandLine cmdLine = new DefaultParser().parse(options(), args);
+			if (atLeastOneRequiredOption != null) {
+				Set<String> allOptionNames = optionMap.keySet();
+				if (!allOptionNames.containsAll(atLeastOneRequiredOption)) {
+					throw new IllegalStateException("There are at-least-one-required-options which is not found");
+				}
+
+				Set<String> allRuntimeOptionNames = Arrays.stream(cmdLine.getOptions())
+					.map(Option::getLongOpt)
+					.collect(Collectors.toSet());
+				if (allRuntimeOptionNames.stream().noneMatch(opt -> atLeastOneRequiredOption.contains(opt))) {
+					throw new IllegalStateException(
+						String.format(
+							"You should use at least one of these options: '%s'",
+								atLeastOneRequiredOption.stream()
+									.sorted()
+									.collect(Collectors.joining("', '"))
+						)
+					);
+				}
+			}
+			return new CmdLineApp(entryPoint, cmdLine);
 		}
 		catch (ParseException e) {
-			this.printHelp();
+			printHelp();
 			throw new RuntimeException(e.getMessage());
 		}
 	}
@@ -67,11 +115,17 @@ public class CmdLineAppBuilder {
 	private void printHelp() {
 		new HelpFormatter()
 			.printHelp(
-				String.format("java -jar %s.jar", this.jarName),
-				this.description,
-				this.options,
+				String.format("java -jar %s.jar", jarName),
+				description,
+				options(),
 				"",
 				true
 			);
+	}
+
+	private Options options() {
+		Options options = new Options();
+		this.optionMap.values().forEach(options::addOption);
+		return options;
 	}
 }

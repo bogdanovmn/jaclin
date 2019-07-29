@@ -1,5 +1,7 @@
 package com.github.bogdanovmn.cmdlineapp;
 
-public interface CmdLineAppEntryPoint<T> {
-	void execute(T t) throws Exception;
+import org.apache.commons.cli.CommandLine;
+
+public interface CmdLineAppEntryPoint {
+	void execute(CommandLine cmdLine) throws Exception;
 }
