@@ -45,8 +45,8 @@
 
 	<distributionManagement>
 		<repository>
-			<id>bintray-repo-maven</id>
-			<url>https://api.bintray.com/maven/bogdanovmn/maven-repo/java-cmdline-app/;publish=1</url>
+			<id>github</id>
+			<url>https://maven.pkg.github.com/bogdanovmn/java-common</url>
 		</repository>
 	</distributionManagement>
 
