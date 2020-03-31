@@ -1,5 +1,6 @@
-package com.github.bogdanovmn.cmdlineapp;
+package com.github.bogdanovmn.cmdline;
 
+import org.apache.commons.cli.Option;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
@@ -66,16 +67,31 @@ public class CmdLineAppBuilderTest {
 	@Test(expected = RuntimeException.class)
 	public void shouldRaiseAnExceptionOnUnknownAtLeastOneRequiredOption() throws Exception {
 		try {
-			new CmdLineAppBuilder(new String[]{"-x"})
-				.withArg("integer", "some integer arg")
-				.withArg("string", "some string arg")
-				.withFlag("xxx-opt", "xxx!")
-				.withAtLeastOneRequiredOption("unknown-opt", "string-opt")
-				.withEntryPoint(cmdLine -> {})
-				.build().run();
+			new CmdLineAppBuilder(new String[]{"-m", "2", "-s", "3"})
+				.withJarName("my-jar-name")
+				.withDescription("My program does ...")
+
+				.withArg("some-option", "...description of the option...")
+
+				.withFlag("flag", "...description of the option...")
+
+				.withCustomOption(
+					Option.builder()
+						.longOpt("custom-option")
+						.desc("...description of the option...")
+						.build()
+				)
+
+				.withRequiredArg("mandatory-option", "...description of the option...")
+
+				.withAtLeastOneRequiredOption("some-option", "flag1")
+
+				.withEntryPoint(
+					cmdLine -> {}
+				).build().run();
 		}
 		catch (RuntimeException ex) {
-			assertEquals("There are at-least-one-required-options which is not found", ex.getMessage());
+			assertEquals("Unknown option: [flag1]", ex.getMessage());
 			throw ex;
 		}
 	}

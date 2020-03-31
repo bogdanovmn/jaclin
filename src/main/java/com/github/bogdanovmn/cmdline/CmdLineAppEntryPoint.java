@@ -1,4 +1,4 @@
-package com.github.bogdanovmn.cmdlineapp;
+package com.github.bogdanovmn.cmdline;
 
 import org.apache.commons.cli.CommandLine;
 

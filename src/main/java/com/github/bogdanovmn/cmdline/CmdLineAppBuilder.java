@@ -1,4 +1,4 @@
-package com.github.bogdanovmn.cmdlineapp;
+package com.github.bogdanovmn.cmdline;
 
 import org.apache.commons.cli.*;
 
@@ -83,16 +83,26 @@ public class CmdLineAppBuilder {
 
 	public CmdLineApp build() {
 		try {
+			withFlag("help", "show this message");
 			CommandLine cmdLine = new DefaultParser().parse(options(), args);
+
+			if (cmdLine.hasOption("h")) {
+				printHelp();
+				entryPoint = doNothing -> {};
+			}
+
 			if (atLeastOneRequiredOption != null) {
 				Set<String> allOptionNames = optionMap.keySet();
 				if (!allOptionNames.containsAll(atLeastOneRequiredOption)) {
-					throw new IllegalStateException("There are at-least-one-required-options which is not found");
+					Set<String> unknownOptions = new HashSet<>(atLeastOneRequiredOption);
+					unknownOptions.removeAll(allOptionNames);
+					throw new IllegalStateException("Unknown option: " + unknownOptions);
 				}
 
 				Set<String> allRuntimeOptionNames = Arrays.stream(cmdLine.getOptions())
 					.map(Option::getLongOpt)
 					.collect(Collectors.toSet());
+
 				if (allRuntimeOptionNames.stream().noneMatch(opt -> atLeastOneRequiredOption.contains(opt))) {
 					throw new IllegalStateException(
 						String.format(
@@ -115,7 +125,7 @@ public class CmdLineAppBuilder {
 	private void printHelp() {
 		new HelpFormatter()
 			.printHelp(
-				String.format("java -jar %s.jar", jarName),
+				String.format("java -jar %s.jar", Optional.ofNullable(jarName).orElse("the")),
 				description,
 				options(),
 				"",
