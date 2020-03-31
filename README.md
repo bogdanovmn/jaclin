@@ -33,10 +33,10 @@ public class App {
 			// If you need something what this wrapper doesn't support, you can pass original Apache's Option object
 			.withCustomOption(
 				Option.builder()
-                    .longOpt("custom-option")
-                    .desc("...description of the option...")
-                .build()
-            )
+					.longOpt("custom-option")
+					.desc("...description of the option...")
+				.build()
+			)
 			
 			// Mandatory option
 			.withRequiredArg("mandatory-option", "...description of the option...")
