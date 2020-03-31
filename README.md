@@ -31,7 +31,12 @@ public class App {
 			.withFlag("flag", "...description of the option...")
 			
 			// If you need something what this wrapper doesn't support, you can pass original Apache's Option object
-			.withCustomOption(customApacheCommandLineOption)
+			.withCustomOption(
+				Option.builder()
+                    .longOpt("custom-option")
+                    .desc("...description of the option...")
+                .build()
+            )
 			
 			// Mandatory option
 			.withRequiredArg("mandatory-option", "...description of the option...")
@@ -62,7 +67,7 @@ My program does ...
  -s,--some-option <ARG>        ...description of the option...
 ```
 
-## 4. If must specify one of options, there is the easy solution: 
+## 4. If you must specify one of options, there is the simple solution: 
 ```java
 new CmdLineAppBuilder(args)
     // Optional argument
@@ -78,4 +83,3 @@ new CmdLineAppBuilder(args)
         }
     ).build().run();
 ``` 
-   
