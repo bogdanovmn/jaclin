@@ -1,5 +1,10 @@
 
 
+# Why another CLI-library?
+
+For my CLI applications I use Apache Commons-Cli library. It is powerful tool. Unfortunately, it is too verbose. 
+This library allows you to use commons-cli in the fluent way. No more boilerplate code. 
+
 # How to use it
 
 ## 1. Get the latest dependency
@@ -67,7 +72,9 @@ My program does ...
  -s,--some-option <ARG>        ...description of the option...
 ```
 
-## 4. If you must specify one of options, there is the simple solution: 
+# New features
+
+## If you must specify one of options, there is a simple solution: 
 ```java
 new CmdLineAppBuilder(args)
     // Optional argument
