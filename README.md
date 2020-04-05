@@ -35,7 +35,8 @@ public class App {
 			// Optional flag (without a value)
 			.withFlag("flag", "...description of the option...")
 			
-			// If you need something what this wrapper doesn't support, you can pass original Apache's Option object
+			// If you need something what this wrapper doesn't support, 
+			// you can pass original Apache's Option object
 			.withCustomOption(
 				Option.builder()
 					.longOpt("custom-option")
@@ -59,6 +60,7 @@ public class App {
 	}
 }
 ``` 
+Note: option's short name will be generated automatically
 
 ## 3. Run the application with -h flag in order to see the usage text (it will be automatically constructed)
 ```bash
@@ -72,7 +74,7 @@ My program does ...
  -s,--some-option <ARG>        ...description of the option...
 ```
 
-# New features
+# Features
 
 ## If you must specify one of options, there is a simple solution: 
 ```java
@@ -90,3 +92,16 @@ new CmdLineAppBuilder(args)
         }
     ).build().run();
 ``` 
+
+## If you want to connect options, there is a solution
+```java
+new CmdLineAppBuilder(new String[] {"-i", "123", "-b", "-s", "str"})
+	.withArg("integer-opt", "integer option description")
+	.withArg("string-opt", "string option description")
+	.withFlag("bool-flag", "bool-flag description")
+	.withDependencies("bool-flag", "integer-opt", "string-opt")
+	.withEntryPoint(cmdLine -> {})
+	.build().run();
+```
+It means that if you specify "bool-flag" option, you must also specify it's dependencies:  "integer-opt" & "string-opt"
+You don't need to manage it in your own code.

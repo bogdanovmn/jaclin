@@ -7,8 +7,10 @@ import java.util.stream.Collectors;
 
 public class CmdLineAppBuilder {
 	private final String[] args;
+	private CommandLine cmdLine;
 	private Set<String> atLeastOneRequiredOption;
 	private final Map<String, Option> optionMap = new HashMap<>();
+	private final Map<String, Set<String>> dependencies = new HashMap<>();
 	private String jarName = "<app-name>";
 	private String description = "";
 	private CmdLineAppEntryPoint entryPoint;
@@ -81,45 +83,84 @@ public class CmdLineAppBuilder {
 		return this;
 	}
 
+	public CmdLineAppBuilder withDependencies(String parentOption, String... childOptions) {
+		dependencies.put(
+			parentOption,
+			new HashSet<>(Arrays.asList(childOptions))
+		);
+		return this;
+	}
+
 	public CmdLineApp build() {
-		try {
-			withFlag("help", "show this message");
-			CommandLine cmdLine = new DefaultParser().parse(options(), args);
+		CommandLine cmdLine = parserWithHelpOption();
+		atLeastOneRequiredOptionValidation(cmdLine);
+		dependenciesValidation(cmdLine);
+		return new CmdLineApp(entryPoint, cmdLine);
+	}
 
-			if (cmdLine.hasOption("h")) {
-				printHelp();
-				entryPoint = doNothing -> {};
-			}
+	private void dependenciesValidation(CommandLine cmdLine) {
+		if (!dependencies.isEmpty()) {
+			Set<String> allOptions = Arrays.stream(cmdLine.getOptions())
+				.map(Option::getLongOpt)
+				.collect(Collectors.toSet());
 
-			if (atLeastOneRequiredOption != null) {
-				Set<String> allOptionNames = optionMap.keySet();
-				if (!allOptionNames.containsAll(atLeastOneRequiredOption)) {
-					Set<String> unknownOptions = new HashSet<>(atLeastOneRequiredOption);
-					unknownOptions.removeAll(allOptionNames);
-					throw new IllegalStateException("Unknown option: " + unknownOptions);
-				}
-
-				Set<String> allRuntimeOptionNames = Arrays.stream(cmdLine.getOptions())
-					.map(Option::getLongOpt)
-					.collect(Collectors.toSet());
-
-				if (allRuntimeOptionNames.stream().noneMatch(opt -> atLeastOneRequiredOption.contains(opt))) {
+			dependencies.forEach((parent, child) -> {
+				if (allOptions.contains(parent) && !allOptions.containsAll(child)) {
+					Set<String> missedOptions = new HashSet<>(child);
+					missedOptions.removeAll(allOptions);
 					throw new IllegalStateException(
 						String.format(
-							"You should use at least one of these options: '%s'",
-								atLeastOneRequiredOption.stream()
-									.sorted()
-									.collect(Collectors.joining("', '"))
+							"With '%s' option you must also specify these: %s",
+							parent, missedOptions
 						)
 					);
 				}
+			});
+		}
+	}
+
+	private void atLeastOneRequiredOptionValidation(CommandLine cmdLine) {
+		if (atLeastOneRequiredOption != null) {
+			Set<String> allOptionNames = optionMap.keySet();
+			if (!allOptionNames.containsAll(atLeastOneRequiredOption)) {
+				Set<String> unknownOptions = new HashSet<>(atLeastOneRequiredOption);
+				unknownOptions.removeAll(allOptionNames);
+				throw new IllegalStateException("Unknown option: " + unknownOptions);
 			}
-			return new CmdLineApp(entryPoint, cmdLine);
+
+			Set<String> allRuntimeOptionNames = Arrays.stream(cmdLine.getOptions())
+				.map(Option::getLongOpt)
+				.collect(Collectors.toSet());
+
+			if (allRuntimeOptionNames.stream().noneMatch(opt -> atLeastOneRequiredOption.contains(opt))) {
+				throw new IllegalStateException(
+					String.format(
+						"You should use at least one of these options: '%s'",
+							atLeastOneRequiredOption.stream()
+								.sorted()
+								.collect(Collectors.joining("', '"))
+					)
+				);
+			}
+		}
+	}
+
+	private CommandLine parserWithHelpOption() {
+		withFlag("help", "show this message");
+		CommandLine cmdLine;
+		try {
+			cmdLine = new DefaultParser().parse(options(), args);
 		}
 		catch (ParseException e) {
 			printHelp();
 			throw new RuntimeException(e.getMessage());
 		}
+
+		if (cmdLine.hasOption("h")) {
+			printHelp();
+			entryPoint = doNothing -> {};
+		}
+		return cmdLine;
 	}
 
 	private void printHelp() {
