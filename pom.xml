@@ -6,7 +6,7 @@
 
 	<groupId>com.github.bogdanovmn.cmdline</groupId>
 	<artifactId>cmdline-app</artifactId>
-	<version>2.1.0</version>
+	<version>2.1.1</version>
 	<name>java-cmdline-app</name>
 	<description>Java command line application arguments helper</description>
 	<url>http://github.com/${git.id}</url>
