@@ -42,7 +42,7 @@ public class CmdLineAppBuilder {
 			name,
 			Option.builder(name.substring(0, 1).toLowerCase())
 				.longOpt(name)
-				.hasArg().argName("ARG")
+				.hasArgs().argName("ARG")
 				.desc(description)
 				.required()
 			.build()
@@ -55,7 +55,7 @@ public class CmdLineAppBuilder {
 			name,
 			Option.builder(name.substring(0, 1).toLowerCase())
 				.longOpt(name)
-				.hasArg().argName("ARG")
+				.hasArgs().argName("ARG")
 				.desc(description)
 				.build()
 		);
