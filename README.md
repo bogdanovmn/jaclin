@@ -62,6 +62,37 @@ public class App {
 ``` 
 Note: option's short name will be generated automatically
 
+### 2.1 For a Spring CLI it would be like this
+```java
+import com.github.bogdanovmn.cmdlineapp.CmdLineAppBuilder;
+import org.springframework.boot.Banner;
+import org.springframework.boot.CommandLineRunner;
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+
+@SpringBootApplication
+public class App implements CommandLineRunner {
+
+    public static void main(String[] args) {
+        SpringApplication app = new SpringApplication(App.class);
+        app.setBannerMode(Banner.Mode.OFF);
+        app.run(args);
+    }
+
+    @Override
+    public void run(String... args) throws Exception {
+        new CmdLineAppBuilder(args)
+            // ...
+            .withEntryPoint(
+                cmdLine -> {
+                    // ...
+                }
+            ).build().run();
+    }
+}
+
+``` 
+
 ## 3. Run the application with -h flag in order to see the usage text (it will be automatically constructed)
 ```bash
 usage: java -jar my-jar-name.jar [--custom-option] [-f] [-h] -m <ARG> [-s
