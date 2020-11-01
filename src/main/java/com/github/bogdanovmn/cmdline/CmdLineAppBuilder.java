@@ -7,13 +7,13 @@ import java.util.stream.Collectors;
 
 public class CmdLineAppBuilder {
 	private final String[] args;
-	private CommandLine cmdLine;
 	private Set<String> atLeastOneRequiredOption;
 	private final Map<String, Option> optionMap = new HashMap<>();
 	private final Map<String, Set<String>> dependencies = new HashMap<>();
 	private String jarName = "<app-name>";
 	private String description = "";
 	private CmdLineAppEntryPoint entryPoint;
+	private final UniqShortNameFactory uniqNames = new UniqShortNameFactory();
 
 	public CmdLineAppBuilder(String[] args) {
 		this.args = args;
@@ -33,6 +33,7 @@ public class CmdLineAppBuilder {
 		if (option.getLongOpt() == null) {
 			throw new IllegalStateException("You should define a long option name for " + option);
 		}
+		uniqNames.add(option.getOpt());
 		optionMap.put(option.getLongOpt(), option);
 		return this;
 	}
@@ -40,7 +41,7 @@ public class CmdLineAppBuilder {
 	public CmdLineAppBuilder withRequiredArg(String name, String description) {
 		optionMap.put(
 			name,
-			Option.builder(name.substring(0, 1).toLowerCase())
+			Option.builder(uniqNames.shortName(name))
 				.longOpt(name)
 				.hasArgs().argName("ARG")
 				.desc(description)
@@ -53,7 +54,7 @@ public class CmdLineAppBuilder {
 	public CmdLineAppBuilder withArg(String name, String description) {
 		optionMap.put(
 			name,
-			Option.builder(name.substring(0, 1).toLowerCase())
+			Option.builder(uniqNames.shortName(name))
 				.longOpt(name)
 				.hasArgs().argName("ARG")
 				.desc(description)
@@ -65,7 +66,7 @@ public class CmdLineAppBuilder {
 	public CmdLineAppBuilder withFlag(String name, String description) {
 		optionMap.put(
 			name,
-			Option.builder(name.substring(0, 1).toLowerCase())
+			Option.builder(uniqNames.shortName(name))
 				.longOpt(name)
 				.desc(description)
 			.build()
