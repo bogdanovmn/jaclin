@@ -11,7 +11,11 @@ class UniqShortNameFactory {
 	);
 	private final List<ShortNameRule> rulesForMultiPartNames = Arrays.asList(
 		new ShortNameRuleFirstLetter(),
-		new ShortNameRuleFirstLetterMultiPart()
+		new ShortNameRuleMultiPartFirstLetter(),
+		new ShortNameRuleMultiPartWithoutDashes(),
+		new ShortNameRuleMultiPartNumberSuffix(
+			new ShortNameRuleMultiPartFirstLetter()
+		)
 	);
 
 	String shortName(String originName) {

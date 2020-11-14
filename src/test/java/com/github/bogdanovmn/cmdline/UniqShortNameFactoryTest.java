@@ -31,7 +31,8 @@ public class UniqShortNameFactoryTest {
 			{"position",       "pn"},
 			{"pattern",        "ptn"},
 			{"option-two",     "ot"},
-			{"option-three",   "option-three"},
+			{"option-three",   "optionthree"},
+			{"option_three",   "ot2"},
 			{"boolean",        "b"},
 			{"bla-bla-option", "bbo"}
 		});

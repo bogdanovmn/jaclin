@@ -4,7 +4,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-class ShortNameRuleFirstLetterMultiPart implements ShortNameRule {
+class ShortNameRuleMultiPartFirstLetter implements ShortNameRule {
 	@Override
 	public Optional<String> shortName(OptionName name) {
 		List<String> parts = name.parts();
