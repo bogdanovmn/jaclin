@@ -8,7 +8,7 @@ import java.util.stream.Collectors;
 public class CmdLineAppBuilder {
 	private final String[] args;
 	private Set<String> atLeastOneRequiredOption;
-	private final Map<String, Option> optionMap = new LinkedHashMap<>();
+	private final Map<String, Option> optionMap = new HashMap<>();
 	private final Map<String, Set<String>> dependencies = new HashMap<>();
 	private String jarName = "<app-name>";
 	private String description = "";
