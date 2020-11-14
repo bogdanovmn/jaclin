@@ -18,7 +18,7 @@ class UniqShortNameFactory {
 		)
 	);
 
-	String shortName(String originName) {
+	String produce(String originName) {
 		if (originName == null) {
 			throw new IllegalStateException("Option name expected");
 		}

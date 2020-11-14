@@ -40,6 +40,6 @@ public class UniqShortNameFactoryTest {
 
 	@Test
 	public void shortName() {
-		assertEquals(shortOptionName, options.shortName(optionName));
+		assertEquals(shortOptionName, options.produce(optionName));
 	}
 }

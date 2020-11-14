@@ -13,7 +13,7 @@ public class CmdLineAppBuilder {
 	private String jarName = "<app-name>";
 	private String description = "";
 	private CmdLineAppEntryPoint entryPoint;
-	private final UniqShortNameFactory uniqNames = new UniqShortNameFactory();
+	private final UniqShortNameFactory uniqShortNames = new UniqShortNameFactory();
 
 	public CmdLineAppBuilder(String[] args) {
 		this.args = args;
@@ -33,28 +33,44 @@ public class CmdLineAppBuilder {
 		if (option.getLongOpt() == null) {
 			throw new IllegalStateException("You should define a long option name for " + option);
 		}
-		uniqNames.add(option.getOpt());
+		uniqShortNames.add(option.getOpt());
 		optionMap.put(option.getLongOpt(), option);
 		return this;
 	}
 
-	public CmdLineAppBuilder withRequiredArg(String name, String description) {
+	private CmdLineAppBuilder withRequiredArg(String name, String shortName, String description, boolean shortNameHasToBeValidated) {
+		if (shortNameHasToBeValidated) {
+			uniqShortNames.add(shortName);
+		}
 		optionMap.put(
 			name,
-			Option.builder(uniqNames.shortName(name))
+			Option.builder(shortName)
 				.longOpt(name)
 				.hasArgs().argName("ARG")
 				.desc(description)
 				.required()
-			.build()
+				.build()
 		);
 		return this;
 	}
 
-	public CmdLineAppBuilder withArg(String name, String description) {
+	public CmdLineAppBuilder withRequiredArg(String name, String shortName, String description) {
+		withRequiredArg(name, shortName, description, true);
+		return this;
+	}
+
+	public CmdLineAppBuilder withRequiredArg(String name, String description) {
+		withRequiredArg(name, uniqShortNames.produce(name), description, false);
+		return this;
+	}
+
+	private CmdLineAppBuilder withArg(String name, String shortName, String description, boolean shortNameHasToBeValidated) {
+		if (shortNameHasToBeValidated) {
+			uniqShortNames.add(shortName);
+		}
 		optionMap.put(
 			name,
-			Option.builder(uniqNames.shortName(name))
+			Option.builder(shortName)
 				.longOpt(name)
 				.hasArgs().argName("ARG")
 				.desc(description)
@@ -63,14 +79,37 @@ public class CmdLineAppBuilder {
 		return this;
 	}
 
-	public CmdLineAppBuilder withFlag(String name, String description) {
+	public CmdLineAppBuilder withArg(String name, String description) {
+		withArg(name, uniqShortNames.produce(name), description, false);
+		return this;
+	}
+
+	public CmdLineAppBuilder withArg(String name, String shortName, String description) {
+		withArg(name, shortName, description, true);
+		return this;
+	}
+
+	private CmdLineAppBuilder withFlag(String name, String shortName, String description, boolean shortNameHasToBeValidated) {
+		if (shortNameHasToBeValidated) {
+			uniqShortNames.add(shortName);
+		}
 		optionMap.put(
 			name,
-			Option.builder(uniqNames.shortName(name))
+			Option.builder(shortName)
 				.longOpt(name)
 				.desc(description)
 			.build()
 		);
+		return this;
+	}
+
+	public CmdLineAppBuilder withFlag(String name, String description) {
+		withFlag(name, uniqShortNames.produce(name), description, false);
+		return this;
+	}
+
+	public CmdLineAppBuilder withFlag(String name, String shortName, String description) {
+		withFlag(name, shortName, description, true);
 		return this;
 	}
 
