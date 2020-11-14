@@ -45,7 +45,8 @@ public class App {
 			)
 			
 			// Mandatory option
-			.withRequiredArg("mandatory-option", "...description of the option...")
+			// note that we specified the short name directly (usually it is generating automatically)
+			.withRequiredArg("mandatory-option", "shortvalue", "...description of the option...")
 			
 			.withEntryPoint(
 				cmdLine -> {
