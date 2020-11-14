@@ -8,7 +8,7 @@ import java.util.stream.Collectors;
 public class CmdLineAppBuilder {
 	private final String[] args;
 	private Set<String> atLeastOneRequiredOption;
-	private final Map<String, Option> optionMap = new HashMap<>();
+	private final Map<String, Option> optionMap = new LinkedHashMap<>();
 	private final Map<String, Set<String>> dependencies = new HashMap<>();
 	private String jarName = "<app-name>";
 	private String description = "";
@@ -204,7 +204,15 @@ public class CmdLineAppBuilder {
 	}
 
 	private void printHelp() {
-		new HelpFormatter()
+		HelpFormatter helpFormatter = new HelpFormatter();
+		helpFormatter.setOptionComparator(
+			Comparator.comparingInt(
+				option -> uniqShortNames.orderNumberByShortName(
+					option.getOpt()
+				)
+			)
+		);
+		helpFormatter
 			.printHelp(
 				String.format("java -jar %s.jar", Optional.ofNullable(jarName).orElse("the")),
 				description,

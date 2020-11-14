@@ -3,12 +3,14 @@ package com.github.bogdanovmn.cmdline;
 import java.util.*;
 
 class UniqShortNameFactory {
-	private final Set<String> alreadyProduced = new HashSet<>();
+	private final Map<String, Integer> alreadyProduced = new HashMap<>();
+
 	private final List<ShortNameRule> rulesForSimpleNames = Arrays.asList(
 		new ShortNameRuleFirstLetter(),
 		new ShortNameRuleFirstAndLastLetters(),
 		new ShortNameRule3ConsonantLetters()
 	);
+
 	private final List<ShortNameRule> rulesForMultiPartNames = Arrays.asList(
 		new ShortNameRuleFirstLetter(),
 		new ShortNameRuleMultiPartFirstLetter(),
@@ -34,8 +36,8 @@ class UniqShortNameFactory {
 			Optional<String> shortName = rule.shortName(name);
 			if (shortName.isPresent()) {
 				result = shortName.get();
-				if (!alreadyProduced.contains(result)) {
-					alreadyProduced.add(result);
+				if (!alreadyProduced.containsKey(result)) {
+					alreadyProduced.put(result, alreadyProduced.size() + 1);
 					break;
 				}
 				else {
@@ -45,13 +47,13 @@ class UniqShortNameFactory {
 		}
 
 		if (result == null) {
-			if (alreadyProduced.contains(originName)) {
+			if (alreadyProduced.containsKey(originName)) {
 				throw new IllegalStateException(
 					String.format("Short name for %s is already produced. All short names: %s", originName, alreadyProduced)
 				);
 			}
 			else {
-				alreadyProduced.add(originName);
+				alreadyProduced.put(originName, alreadyProduced.size() + 1);
 				result = originName;
 			}
 		}
@@ -60,10 +62,14 @@ class UniqShortNameFactory {
 	}
 
 	void add(String shortName) {
-		if (!alreadyProduced.add(shortName)) {
+		if (null != alreadyProduced.put(shortName, alreadyProduced.size() + 1)) {
 			throw new IllegalStateException(
 				String.format("Option with short name '%s' has been already defined", shortName)
 			);
 		}
+	}
+
+	public int orderNumberByShortName(String shortName) {
+		return alreadyProduced.getOrDefault(shortName, -1);
 	}
 }
