@@ -6,6 +6,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
 import java.util.Arrays;
 
+import static com.github.bogdanovmn.cmdline.CmdLineAppBuilderEnumTest.EnumExample.FOO;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
@@ -14,10 +15,10 @@ public class CmdLineAppBuilderEnumTest {
 
     @Test
     public void shouldHandleEnumOption() throws Exception {
-        new CmdLineAppBuilder(new String[]{"-e", "foo"})
+        new CmdLineAppBuilder(new String[]{"-e", "FOO"})
             .withEnumArg("enum", "enum value", EnumExample.class)
-            .withEntryPoint(cmdLine -> {
-                assertEquals("foo", cmdLine.getOptionValue("enum"));
+            .withEntryPoint(options -> {
+                assertEquals(FOO, options.getEnum("enum"));
             })
         .build().run();
     }
@@ -31,8 +32,8 @@ public class CmdLineAppBuilderEnumTest {
 
         new CmdLineAppBuilder(new String[]{"-e", "foo", "-h"})
             .withEnumArg("enum", "enum value", EnumExample.class)
-            .withEntryPoint(cmdLine -> {
-                assertEquals("foo", cmdLine.getOptionValue("enum"));
+            .withEntryPoint(options -> {
+                assertEquals("foo", options.get("enum"));
             })
         .build().run();
 
@@ -50,7 +51,7 @@ public class CmdLineAppBuilderEnumTest {
             new CmdLineAppBuilder(new String[]{"-b"})
                 .withArg("integer-opt", "source arg description")
                 .withArg("integer-opt", "i", "source 2 arg description")
-                .withEntryPoint(cmdLine -> {})
+                .withEntryPoint(options -> {})
             .build().run();
         } catch (RuntimeException ex) {
             assertEquals("Option with short name 'i' has been already defined", ex.getMessage());

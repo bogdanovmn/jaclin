@@ -14,7 +14,7 @@ public class CmdLineAppBuilderAtLeastOneRequiredOptionTest {
                 .withArg("string-opt", "some string arg")
                 .withFlag("xxx-opt", "xxx!")
                 .withAtLeastOneRequiredOption("integer-opt", "string-opt")
-                .withEntryPoint(cmdLine -> {})
+                .withEntryPoint(options -> {})
             .build().run();
         } catch (RuntimeException ex) {
             assertEquals("You should use at least one of these options: 'integer-opt', 'string-opt'", ex.getMessage());
@@ -29,8 +29,8 @@ public class CmdLineAppBuilderAtLeastOneRequiredOptionTest {
             .withArg("string-opt", "some string arg")
             .withFlag("xxx-opt", "xxx!")
             .withAtLeastOneRequiredOption("integer-opt", "string-opt")
-            .withEntryPoint(cmdLine -> {
-                assertEquals("s value", cmdLine.getOptionValue("s"));
+            .withEntryPoint(options -> {
+                assertEquals("s value", options.get("string-opt"));
             })
         .build().run();
     }
@@ -57,7 +57,7 @@ public class CmdLineAppBuilderAtLeastOneRequiredOptionTest {
 
                 .withAtLeastOneRequiredOption("some-option", "flag1")
 
-                .withEntryPoint(cmdLine -> {})
+                .withEntryPoint(options -> {})
                 .build().run();
         } catch (RuntimeException ex) {
             assertEquals("Unknown option: [flag1]", ex.getMessage());

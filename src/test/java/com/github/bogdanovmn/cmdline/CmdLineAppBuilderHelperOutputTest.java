@@ -21,8 +21,8 @@ public class CmdLineAppBuilderHelperOutputTest {
 
         new CmdLineAppBuilder(new String[]{"-h"})
             .withEnumArg("enum", "enum value loooooonnnngggggg loooooonnnngggggg loooooonnnngggggg string", EnumExample.class)
-            .withEntryPoint(cmdLine -> {
-                assertEquals("foo", cmdLine.getOptionValue("enum"));
+            .withEntryPoint(options -> {
+                assertEquals("foo", options.get("enum"));
             })
         .build().run();
 

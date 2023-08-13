@@ -8,7 +8,7 @@ import java.util.stream.Collectors;
 public class CmdLineAppBuilder {
     private final String[] args;
     private Set<String> atLeastOneRequiredOption;
-    private final Map<String, Option> optionMap = new HashMap<>();
+    private final Map<String, OptionMeta<?>> optionMap = new HashMap<>();
     private final Map<String, Set<String>> dependencies = new HashMap<>();
     private String jarName = "<app-name>";
     private String description = "";
@@ -34,19 +34,21 @@ public class CmdLineAppBuilder {
             throw new IllegalStateException("You should define a long option name for " + option);
         }
         uniqShortNames.add(option.getOpt());
-        optionMap.put(option.getLongOpt(), option);
+        optionMap.put(option.getLongOpt(), OptionMeta.string(option));
         return this;
     }
 
     private CmdLineAppBuilder requiredArg(String name, String shortName, String description) {
         optionMap.put(
             name,
-            Option.builder(shortName)
-                .longOpt(name)
-                .hasArgs().argName("ARG")
-                .desc(description)
-                .required()
-            .build()
+            OptionMeta.string(
+                Option.builder(shortName)
+                    .longOpt(name)
+                    .hasArgs().argName("ARG")
+                    .desc(description)
+                    .required()
+                .build()
+            )
         );
         return this;
     }
@@ -63,11 +65,13 @@ public class CmdLineAppBuilder {
     private CmdLineAppBuilder arg(String name, String shortName, String description) {
         optionMap.put(
             name,
-            Option.builder(shortName)
-                .longOpt(name)
-                .hasArgs().argName("ARG")
-                .desc(description)
-            .build()
+            OptionMeta.string(
+                Option.builder(shortName)
+                    .longOpt(name)
+                    .hasArgs().argName("ARG")
+                    .desc(description)
+                .build()
+            )
         );
         return this;
     }
@@ -81,13 +85,41 @@ public class CmdLineAppBuilder {
         return arg(name, shortName, description);
     }
 
+
+    private CmdLineAppBuilder intArg(String name, String shortName, String description) {
+        optionMap.put(
+            name,
+            OptionMeta.integer(
+                Option.builder(shortName)
+                    .longOpt(name)
+                    .hasArgs().argName("ARG")
+                    .desc(description)
+                .build()
+            )
+        );
+        return this;
+    }
+
+    public CmdLineAppBuilder withIntArg(String name, String description) {
+        return intArg(name, uniqShortNames.produce(name), description);
+    }
+
+    public CmdLineAppBuilder withIntArg(String name, String shortName, String description) {
+        uniqShortNames.add(shortName);
+        return intArg(name, shortName, description);
+    }
+
+
+
     private CmdLineAppBuilder flag(String name, String shortName, String description) {
         optionMap.put(
             name,
-            Option.builder(shortName)
-                .longOpt(name)
-                .desc(description)
-            .build()
+            OptionMeta.bool(
+                Option.builder(shortName)
+                    .longOpt(name)
+                    .desc(description)
+                .build()
+            )
         );
         return this;
     }
@@ -113,17 +145,22 @@ public class CmdLineAppBuilder {
     private <E extends Enum<E>> CmdLineAppBuilder enumArg(String name, String shortName, String description, Class<E> type) {
         optionMap.put(
             name,
-            Option.builder(shortName)
-                .longOpt(name)
-                .hasArgs().argName("ARG")
-                .desc(
-                    String.format("%s%nPossible values: %s",
-                        description,
-                        Arrays.stream(type.getEnumConstants())
-                            .map(Enum::name)
-                            .collect(Collectors.joining(" | "))
-                    )
+            OptionMeta.<E>builder()
+                .original(
+                    Option.builder(shortName)
+                        .longOpt(name)
+                        .hasArgs().argName("ARG")
+                        .desc(
+                            String.format("%s%nPossible values: %s",
+                                description,
+                                Arrays.stream(type.getEnumConstants())
+                                    .map(Enum::name)
+                                    .collect(Collectors.joining(" | "))
+                            )
+                        )
+                    .build()
                 )
+                .type(type)
             .build()
         );
         return this;
@@ -151,7 +188,7 @@ public class CmdLineAppBuilder {
         CommandLine cmdLine = parserWithHelpOption();
         atLeastOneRequiredOptionValidation(cmdLine);
         dependenciesValidation(cmdLine);
-        return new CmdLineApp(entryPoint, cmdLine);
+        return new CmdLineApp(entryPoint, new ParsedOptions(cmdLine, optionMap));
     }
 
     private void dependenciesValidation(CommandLine cmdLine) {
@@ -240,7 +277,7 @@ public class CmdLineAppBuilder {
 
     private Options options() {
         Options options = new Options();
-        this.optionMap.values().forEach(options::addOption);
+        this.optionMap.values().forEach(opt -> options.addOption(opt.getOriginal()));
         return options;
     }
 }

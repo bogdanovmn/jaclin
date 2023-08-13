@@ -13,10 +13,10 @@ public class CmdLineAppBuilderWithDependenciesTest {
             .withArg("string-opt", "string option description")
             .withFlag("bool-flag", "bool-flag description")
             .withDependencies("bool-flag", "integer-opt", "string-opt")
-            .withEntryPoint(cmdLine -> {
-                assertEquals("123", cmdLine.getOptionValue("i"));
-                assertEquals("str", cmdLine.getOptionValue("s"));
-                assertTrue(cmdLine.hasOption("b"));
+            .withEntryPoint(options -> {
+                assertEquals("123", options.get("integer-opt"));
+                assertEquals("str", options.get("string-opt"));
+                assertTrue(options.getBool("bool-flag"));
             })
             .build().run();
     }
@@ -29,7 +29,7 @@ public class CmdLineAppBuilderWithDependenciesTest {
                 .withArg("string-opt", "string option description")
                 .withFlag("bool-flag", "bool-flag description")
                 .withDependencies("bool-flag", "integer-opt", "string-opt")
-                .withEntryPoint(cmdLine -> {})
+                .withEntryPoint(options -> {})
             .build().run();
         } catch (RuntimeException ex) {
             assertEquals("With 'bool-flag' option you must also specify these: [string-opt]", ex.getMessage());
