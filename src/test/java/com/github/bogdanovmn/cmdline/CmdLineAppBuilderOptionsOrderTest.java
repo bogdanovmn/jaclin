@@ -20,7 +20,7 @@ public class CmdLineAppBuilderOptionsOrderTest {
             .withArg("zoo", "blabla")
             .withArg("bar", "roflmao")
             .withArg("foo", "yadayada")
-            .withEntryPoint(cmdLine -> {})
+            .withEntryPoint(options -> {})
         .build().run();
 
         String[] lines = outContent.toString().split("\n");
