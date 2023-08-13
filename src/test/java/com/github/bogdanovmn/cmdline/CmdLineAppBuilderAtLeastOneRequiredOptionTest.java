@@ -50,10 +50,9 @@ public class CmdLineAppBuilderAtLeastOneRequiredOptionTest {
                     Option.builder()
                         .longOpt("custom-option")
                         .desc("...description of the option...")
-                    .build()
                 )
 
-                .withRequiredArg("mandatory-option", "...description of the option...")
+                .withArg("mandatory-option", "...description of the option...").required()
 
                 .withAtLeastOneRequiredOption("some-option", "flag1")
 

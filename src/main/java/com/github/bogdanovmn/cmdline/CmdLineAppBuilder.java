@@ -14,140 +14,132 @@ public class CmdLineAppBuilder {
     private String description = "";
     private CmdLineAppEntryPoint entryPoint;
     private final UniqShortNameFactory uniqShortNames = new UniqShortNameFactory();
+    private String currentOpt = null;
 
     public CmdLineAppBuilder(String[] args) {
         this.args = args;
     }
 
+    private void clearCurrentOpt() {
+        currentOpt = null;
+    }
+
+    private void setCurrentOpt(String optName) {
+        if (optionMap.containsKey(optName)) {
+            throw new IllegalStateException(
+                String.format("Option '%s' already defined", optName)
+            );
+        }
+        currentOpt = optName;
+    }
+
     public CmdLineAppBuilder withJarName(String jarName) {
+        clearCurrentOpt();
         this.jarName = jarName;
         return this;
     }
 
     public CmdLineAppBuilder withDescription(String appDescription) {
+        clearCurrentOpt();
         this.description = appDescription;
         return this;
     }
 
-    public CmdLineAppBuilder withCustomOption(Option option) {
-        if (option.getLongOpt() == null) {
+    public CmdLineAppBuilder withCustomOption(Option.Builder option) {
+        clearCurrentOpt();
+        Option prebuildOpt = option.build();
+        if (prebuildOpt.getLongOpt() == null) {
             throw new IllegalStateException("You should define a long option name for " + option);
         }
-        uniqShortNames.add(option.getOpt());
-        optionMap.put(option.getLongOpt(), OptionMeta.string(option));
-        return this;
-    }
-
-    private CmdLineAppBuilder requiredArg(String name, String shortName, String description) {
-        optionMap.put(
-            name,
-            OptionMeta.string(
-                Option.builder(shortName)
-                    .longOpt(name)
-                    .hasArgs().argName("STR")
-                    .desc(description)
-                    .required()
-                .build()
-            )
-        );
-        return this;
-    }
-
-    public CmdLineAppBuilder withRequiredArg(String name, String shortName, String description) {
-        uniqShortNames.add(shortName);
-        return requiredArg(name, shortName, description);
-    }
-
-    public CmdLineAppBuilder withRequiredArg(String name, String description) {
-        return requiredArg(name, uniqShortNames.produce(name), description);
-    }
-
-    private CmdLineAppBuilder arg(String name, String shortName, String description) {
-        optionMap.put(
-            name,
-            OptionMeta.string(
-                Option.builder(shortName)
-                    .longOpt(name)
-                    .hasArgs().argName("STR")
-                    .desc(description)
-                .build()
-            )
-        );
+        uniqShortNames.add(prebuildOpt.getOpt());
+        optionMap.put(prebuildOpt.getLongOpt(), OptionMeta.string(option));
         return this;
     }
 
     public CmdLineAppBuilder withArg(String name, String description) {
-        return arg(name, uniqShortNames.produce(name), description);
-    }
-
-    public CmdLineAppBuilder withArg(String name, String shortName, String description) {
-        uniqShortNames.add(shortName);
-        return arg(name, shortName, description);
-    }
-
-
-    private CmdLineAppBuilder intArg(String name, String shortName, String description) {
+        setCurrentOpt(name);
         optionMap.put(
             name,
-            OptionMeta.integer(
-                Option.builder(shortName)
+            OptionMeta.string(
+                Option.builder(uniqShortNames.produce(name))
                     .longOpt(name)
-                    .hasArgs().argName("INT")
+                    .hasArgs().argName("STR")
                     .desc(description)
-                .build()
             )
         );
         return this;
     }
 
     public CmdLineAppBuilder withIntArg(String name, String description) {
-        return intArg(name, uniqShortNames.produce(name), description);
-    }
-
-    public CmdLineAppBuilder withIntArg(String name, String shortName, String description) {
-        uniqShortNames.add(shortName);
-        return intArg(name, shortName, description);
-    }
-
-
-
-    private CmdLineAppBuilder flag(String name, String shortName, String description) {
+        setCurrentOpt(name);
         optionMap.put(
             name,
-            OptionMeta.bool(
-                Option.builder(shortName)
+            OptionMeta.integer(
+                Option.builder(uniqShortNames.produce(name))
                     .longOpt(name)
+                    .hasArgs().argName("INT")
                     .desc(description)
-                .build()
             )
         );
         return this;
     }
 
     public CmdLineAppBuilder withFlag(String name, String description) {
-        return flag(name, uniqShortNames.produce(name), description);
+        setCurrentOpt(name);
+        optionMap.put(
+            name,
+            OptionMeta.bool(
+                Option.builder(uniqShortNames.produce(name))
+                    .longOpt(name)
+                    .desc(description)
+            )
+        );
+        return this;
     }
 
-    public CmdLineAppBuilder withFlag(String name, String shortName, String description) {
+    public CmdLineAppBuilder withShort(String shortName) {
+        if (currentOpt == null) {
+            throw new IllegalStateException("withShort() method must be apply on an option");
+        }
         uniqShortNames.add(shortName);
-        return flag(name, shortName, description);
+        uniqShortNames.remove(
+            optionMap.get(currentOpt).getOriginal().build().getOpt()
+        );
+        optionMap.get(currentOpt).getOriginal().option(shortName);
+        return this;
+    }
+
+    public CmdLineAppBuilder required() {
+        if (currentOpt == null) {
+            throw new IllegalStateException("required() method must be apply on an option");
+        }
+        optionMap.get(currentOpt).getOriginal().required();
+        return this;
+    }
+
+    public CmdLineAppBuilder withDefault(Object defaultValue) {
+        if (currentOpt == null) {
+            throw new IllegalStateException("withDefault() method must be apply on an option");
+        }
+        OptionMeta meta = optionMap.get(currentOpt);
+        meta.getOriginal().desc(
+            String.format(
+                "%s%nDefault: %s",
+                    meta.getOriginal().build().getDescription(),
+                    defaultValue
+            )
+        );
+        optionMap.put(currentOpt, meta.withDefaultValue(defaultValue));
+        return this;
     }
 
     public <E extends Enum<E>> CmdLineAppBuilder withEnumArg(String name, String description, Class<E> type) {
-        return enumArg(name, uniqShortNames.produce(name), description, type);
-    }
-
-    public <E extends Enum<E>> CmdLineAppBuilder withEnumArg(String name, String shortName, String description, Class<E> type) {
-        uniqShortNames.add(shortName);
-        return enumArg(name, shortName, description, type);
-    }
-
-    private <E extends Enum<E>> CmdLineAppBuilder enumArg(String name, String shortName, String description, Class<E> type) {
+        setCurrentOpt(name);
         optionMap.put(
             name,
             OptionMeta.<E>builder()
                 .original(
-                    Option.builder(shortName)
+                    Option.builder(uniqShortNames.produce(name))
                         .longOpt(name)
                         .hasArgs().argName("ENUM")
                         .desc(
@@ -158,7 +150,6 @@ public class CmdLineAppBuilder {
                                     .collect(Collectors.joining(" | "))
                             )
                         )
-                    .build()
                 )
                 .type(type)
             .build()
@@ -167,16 +158,19 @@ public class CmdLineAppBuilder {
     }
 
     public CmdLineAppBuilder withAtLeastOneRequiredOption(String... options) {
+        clearCurrentOpt();
         atLeastOneRequiredOption = new HashSet<>(Arrays.asList(options));
         return this;
     }
 
     public CmdLineAppBuilder withEntryPoint(CmdLineAppEntryPoint entryPoint) {
+        clearCurrentOpt();
         this.entryPoint = entryPoint;
         return this;
     }
 
     public CmdLineAppBuilder withDependencies(String parentOption, String... childOptions) {
+        clearCurrentOpt();
         dependencies.put(
             parentOption,
             new HashSet<>(Arrays.asList(childOptions))
@@ -185,6 +179,7 @@ public class CmdLineAppBuilder {
     }
 
     public CmdLineApp build() {
+        clearCurrentOpt();
         CommandLine cmdLine = parserWithHelpOption();
         atLeastOneRequiredOptionValidation(cmdLine);
         dependenciesValidation(cmdLine);
@@ -277,7 +272,7 @@ public class CmdLineAppBuilder {
 
     private Options options() {
         Options options = new Options();
-        this.optionMap.values().forEach(opt -> options.addOption(opt.getOriginal()));
+        this.optionMap.values().forEach(opt -> options.addOption(opt.getOriginal().build()));
         return options;
     }
 }

@@ -70,4 +70,8 @@ class UniqShortNameFactory {
     public int orderNumberByShortName(String shortName) {
         return alreadyProduced.getOrDefault(shortName, -1);
     }
+
+    public void remove(String shortName) {
+        alreadyProduced.remove(shortName);
+    }
 }
