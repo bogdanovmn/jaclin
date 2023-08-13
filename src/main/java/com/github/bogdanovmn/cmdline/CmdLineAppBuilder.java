@@ -38,10 +38,7 @@ public class CmdLineAppBuilder {
 		return this;
 	}
 
-	private CmdLineAppBuilder withRequiredArg(String name, String shortName, String description, boolean shortNameHasToBeValidated) {
-		if (shortNameHasToBeValidated) {
-			uniqShortNames.add(shortName);
-		}
+	private CmdLineAppBuilder requiredArg(String name, String shortName, String description) {
 		optionMap.put(
 			name,
 			Option.builder(shortName)
@@ -55,17 +52,15 @@ public class CmdLineAppBuilder {
 	}
 
 	public CmdLineAppBuilder withRequiredArg(String name, String shortName, String description) {
-		return withRequiredArg(name, shortName, description, true);
+        uniqShortNames.add(shortName);
+		return requiredArg(name, shortName, description);
 	}
 
 	public CmdLineAppBuilder withRequiredArg(String name, String description) {
-		return withRequiredArg(name, uniqShortNames.produce(name), description, false);
+		return requiredArg(name, uniqShortNames.produce(name), description);
 	}
 
-	private CmdLineAppBuilder withArg(String name, String shortName, String description, boolean shortNameHasToBeValidated) {
-		if (shortNameHasToBeValidated) {
-			uniqShortNames.add(shortName);
-		}
+	private CmdLineAppBuilder arg(String name, String shortName, String description) {
 		optionMap.put(
 			name,
 			Option.builder(shortName)
@@ -78,17 +73,15 @@ public class CmdLineAppBuilder {
 	}
 
 	public CmdLineAppBuilder withArg(String name, String description) {
-		return withArg(name, uniqShortNames.produce(name), description, false);
+		return arg(name, uniqShortNames.produce(name), description);
 	}
 
 	public CmdLineAppBuilder withArg(String name, String shortName, String description) {
-		return withArg(name, shortName, description, true);
+        uniqShortNames.add(shortName);
+		return arg(name, shortName, description);
 	}
 
-	private CmdLineAppBuilder withFlag(String name, String shortName, String description, boolean shortNameHasToBeValidated) {
-		if (shortNameHasToBeValidated) {
-			uniqShortNames.add(shortName);
-		}
+	private CmdLineAppBuilder flag(String name, String shortName, String description) {
 		optionMap.put(
 			name,
 			Option.builder(shortName)
@@ -100,11 +93,12 @@ public class CmdLineAppBuilder {
 	}
 
 	public CmdLineAppBuilder withFlag(String name, String description) {
-		return withFlag(name, uniqShortNames.produce(name), description, false);
+		return flag(name, uniqShortNames.produce(name), description);
 	}
 
 	public CmdLineAppBuilder withFlag(String name, String shortName, String description) {
-		return withFlag(name, shortName, description, true);
+        uniqShortNames.add(shortName);
+		return flag(name, shortName, description);
 	}
 
 	public CmdLineAppBuilder withAtLeastOneRequiredOption(String... options) {
