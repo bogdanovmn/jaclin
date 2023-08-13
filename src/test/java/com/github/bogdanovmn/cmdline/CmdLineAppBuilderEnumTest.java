@@ -19,6 +19,7 @@ public class CmdLineAppBuilderEnumTest {
             .withEnumArg("enum", "enum value", EnumExample.class)
             .withEntryPoint(options -> {
                 assertEquals(FOO, options.getEnum("enum"));
+                assertEquals("FOO", options.getEnumAsRawString("enum"));
             })
         .build().run();
     }

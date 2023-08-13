@@ -10,11 +10,15 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
-class ParsedOptions {
+public class ParsedOptions {
     private final CommandLine cmdLineArgs;
     private final Map<String, OptionMeta<?>> meta;
 
-    Integer getInt(String optName) {
+    public boolean has(String optName) {
+        return cmdLineArgs.hasOption(optName);
+    }
+
+    public Integer getInt(String optName) {
         OptionMeta<Integer> opt = optMeta(optName, Integer.class);
         return Optional.ofNullable(
             cmdLineArgs.getOptionValue(optName)
@@ -22,13 +26,13 @@ class ParsedOptions {
             .orElse(opt.getDefaultValue());
     }
 
-    List<String> getList(String optName) {
+    public List<String> getList(String optName) {
         OptionMeta<String> opt = optMeta(optName, String.class);
         return Arrays.stream(cmdLineArgs.getOptionValues(optName))
             .collect(Collectors.toList());
     }
 
-    String get(String optName) {
+    public String get(String optName) {
         OptionMeta<String> opt = optMeta(optName, String.class);
         return cmdLineArgs.getOptionValue(
             optName,
@@ -36,12 +40,12 @@ class ParsedOptions {
         );
     }
 
-    boolean getBool(String optName) {
+    public boolean getBool(String optName) {
         optMeta(optName, Boolean.class);
         return cmdLineArgs.hasOption(optName);
     }
 
-    Object getEnum(String optName) {
+    public Object getEnum(String optName) {
         OptionMeta opt = optMeta(optName);
         return Enum.valueOf(
             opt.getType(),
@@ -50,6 +54,16 @@ class ParsedOptions {
                 String.valueOf(
                     opt.getDefaultValue()
                 )
+            )
+        );
+    }
+
+    public String getEnumAsRawString(String optName) {
+        OptionMeta<?> opt = optMeta(optName);
+        return cmdLineArgs.getOptionValue(
+            optName,
+            String.valueOf(
+                opt.getDefaultValue()
             )
         );
     }

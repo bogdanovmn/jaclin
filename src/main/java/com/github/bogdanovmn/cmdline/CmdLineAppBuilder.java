@@ -44,7 +44,7 @@ public class CmdLineAppBuilder {
             OptionMeta.string(
                 Option.builder(shortName)
                     .longOpt(name)
-                    .hasArgs().argName("ARG")
+                    .hasArgs().argName("STR")
                     .desc(description)
                     .required()
                 .build()
@@ -68,7 +68,7 @@ public class CmdLineAppBuilder {
             OptionMeta.string(
                 Option.builder(shortName)
                     .longOpt(name)
-                    .hasArgs().argName("ARG")
+                    .hasArgs().argName("STR")
                     .desc(description)
                 .build()
             )
@@ -92,7 +92,7 @@ public class CmdLineAppBuilder {
             OptionMeta.integer(
                 Option.builder(shortName)
                     .longOpt(name)
-                    .hasArgs().argName("ARG")
+                    .hasArgs().argName("INT")
                     .desc(description)
                 .build()
             )
@@ -149,7 +149,7 @@ public class CmdLineAppBuilder {
                 .original(
                     Option.builder(shortName)
                         .longOpt(name)
-                        .hasArgs().argName("ARG")
+                        .hasArgs().argName("ENUM")
                         .desc(
                             String.format("%s%nPossible values: %s",
                                 description,
