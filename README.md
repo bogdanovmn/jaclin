@@ -137,3 +137,14 @@ new CmdLineAppBuilder(new String[] {"-i", "123", "-b", "-s", "str"})
 ```
 It means that if you specify "bool-flag" option, you must also specify it's dependencies:  "integer-opt" & "string-opt"
 You don't need to manage it in your own code.
+
+## If an option value is Enum value then you can specify it using the withEnumArg(..) method for all possible values description
+```java
+...
+enum MyEnum { FOO, BAR }
+...
+new CmdLineAppBuilder(new String[] {"-e", "FOO"})
+	.withEnumArg("enum-value", "enum value description", MyEnum.class)
+	.withEntryPoint(cmdLine -> {})
+    .build().run();
+```

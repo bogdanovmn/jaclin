@@ -101,6 +101,34 @@ public class CmdLineAppBuilder {
 		return flag(name, shortName, description);
 	}
 
+    public <E extends Enum<E>> CmdLineAppBuilder withEnumArg(String name, String description, Class<E> type) {
+        return enumArg(name, uniqShortNames.produce(name), description, type);
+    }
+
+    public <E extends Enum<E>> CmdLineAppBuilder withEnumArg(String name, String shortName, String description, Class<E> type) {
+        uniqShortNames.add(shortName);
+        return enumArg(name, shortName, description, type);
+    }
+
+    private <E extends Enum<E>> CmdLineAppBuilder enumArg(String name, String shortName, String description, Class<E> type) {
+        optionMap.put(
+            name,
+            Option.builder(shortName)
+                .longOpt(name)
+                .hasArgs().argName("ARG")
+                .desc(
+                    String.format("%s%nPossible values: %s",
+                        description,
+                        Arrays.stream(type.getEnumConstants())
+                            .map(Enum::name)
+                            .collect(Collectors.joining(" | "))
+                    )
+                )
+            .build()
+        );
+        return this;
+    }
+
 	public CmdLineAppBuilder withAtLeastOneRequiredOption(String... options) {
 		atLeastOneRequiredOption = new HashSet<>(Arrays.asList(options));
 		return this;
@@ -178,8 +206,7 @@ public class CmdLineAppBuilder {
 		CommandLine cmdLine;
 		try {
 			cmdLine = new DefaultParser().parse(options(), args);
-		}
-		catch (ParseException e) {
+		} catch (ParseException e) {
 			printHelp();
 			throw new RuntimeException(e.getMessage());
 		}
@@ -200,14 +227,15 @@ public class CmdLineAppBuilder {
 				)
 			)
 		);
-		helpFormatter
-			.printHelp(
-				String.format("java -jar %s.jar", Optional.ofNullable(jarName).orElse("the")),
-				description,
-				options(),
-				"",
-				true
-			);
+        helpFormatter.setLeftPadding(2);
+        helpFormatter.setWidth(120);
+		helpFormatter.printHelp(
+            String.format("java -jar %s.jar", Optional.ofNullable(jarName).orElse("the")),
+            description,
+            options(),
+            "",
+            true
+        );
 	}
 
 	private Options options() {
