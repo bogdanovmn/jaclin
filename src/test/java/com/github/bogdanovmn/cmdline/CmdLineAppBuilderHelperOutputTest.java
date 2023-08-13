@@ -19,12 +19,12 @@ public class CmdLineAppBuilderHelperOutputTest {
 
         System.setOut(new PrintStream(outContent));
 
-        new CmdLineAppBuilder(new String[] {"-h"})
+        new CmdLineAppBuilder(new String[]{"-h"})
             .withEnumArg("enum", "enum value loooooonnnngggggg loooooonnnngggggg loooooonnnngggggg string", EnumExample.class)
             .withEntryPoint(cmdLine -> {
                 assertEquals("foo", cmdLine.getOptionValue("enum"));
             })
-            .build().run();
+        .build().run();
 
         String[] lines = outContent.toString().split("\n");
 
