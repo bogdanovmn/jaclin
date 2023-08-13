@@ -55,13 +55,11 @@ public class CmdLineAppBuilder {
 	}
 
 	public CmdLineAppBuilder withRequiredArg(String name, String shortName, String description) {
-		withRequiredArg(name, shortName, description, true);
-		return this;
+		return withRequiredArg(name, shortName, description, true);
 	}
 
 	public CmdLineAppBuilder withRequiredArg(String name, String description) {
-		withRequiredArg(name, uniqShortNames.produce(name), description, false);
-		return this;
+		return withRequiredArg(name, uniqShortNames.produce(name), description, false);
 	}
 
 	private CmdLineAppBuilder withArg(String name, String shortName, String description, boolean shortNameHasToBeValidated) {
@@ -80,13 +78,11 @@ public class CmdLineAppBuilder {
 	}
 
 	public CmdLineAppBuilder withArg(String name, String description) {
-		withArg(name, uniqShortNames.produce(name), description, false);
-		return this;
+		return withArg(name, uniqShortNames.produce(name), description, false);
 	}
 
 	public CmdLineAppBuilder withArg(String name, String shortName, String description) {
-		withArg(name, shortName, description, true);
-		return this;
+		return withArg(name, shortName, description, true);
 	}
 
 	private CmdLineAppBuilder withFlag(String name, String shortName, String description, boolean shortNameHasToBeValidated) {
@@ -104,13 +100,11 @@ public class CmdLineAppBuilder {
 	}
 
 	public CmdLineAppBuilder withFlag(String name, String description) {
-		withFlag(name, uniqShortNames.produce(name), description, false);
-		return this;
+		return withFlag(name, uniqShortNames.produce(name), description, false);
 	}
 
 	public CmdLineAppBuilder withFlag(String name, String shortName, String description) {
-		withFlag(name, shortName, description, true);
-		return this;
+		return withFlag(name, shortName, description, true);
 	}
 
 	public CmdLineAppBuilder withAtLeastOneRequiredOption(String... options) {
