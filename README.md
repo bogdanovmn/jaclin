@@ -148,10 +148,10 @@ You don't need to manage it in your own code.
 ## Default values support
 ```java
 new CmdLineAppBuilder(new String[] {})
-    .withEnumArg("str-opt", "enum value description", MyEnum.class)
+    .withEnumArg("str-opt", "str-opt value description")
         .withDefault("defaul-value")
     
-    .withEnumArg("int-opt", "enum2 value description", MyEnum.class)
+    .withEnumArg("int-opt", "int-opt value description")
         .withDefault(123)
     
     .withEntryPoint(options -> {
