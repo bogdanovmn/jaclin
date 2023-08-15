@@ -12,13 +12,13 @@ public class CmdLineAppBuilderWithDependenciesTest {
             .withArg("integer-opt", "integer option description")
             .withArg("string-opt", "string option description")
             .withFlag("bool-flag", "bool-flag description")
-            .withDependencies("bool-flag", "integer-opt", "string-opt")
+                .requires("integer-opt", "string-opt")
             .withEntryPoint(options -> {
                 assertEquals("123", options.get("integer-opt"));
                 assertEquals("str", options.get("string-opt"));
                 assertTrue(options.getBool("bool-flag"));
             })
-            .build().run();
+        .build().run();
     }
 
     @Test(expected = RuntimeException.class)
@@ -28,11 +28,33 @@ public class CmdLineAppBuilderWithDependenciesTest {
                 .withArg("integer-opt", "integer option description")
                 .withArg("string-opt", "string option description")
                 .withFlag("bool-flag", "bool-flag description")
-                .withDependencies("bool-flag", "integer-opt", "string-opt")
+                    .requires("integer-opt", "string-opt")
                 .withEntryPoint(options -> {})
             .build().run();
         } catch (RuntimeException ex) {
             assertEquals("With 'bool-flag' option you must also specify these: [string-opt]", ex.getMessage());
+            throw ex;
+        }
+    }
+
+    @Test(expected = RuntimeException.class)
+    public void shouldFailForApplyingRequiresOnNonOption() throws Exception {
+        try {
+            new CmdLineAppBuilder(new String[]{"-i", "123", "-b"})
+                .withArg("integer-opt", "integer option description")
+                .withArg("string-opt", "string option description")
+                .withFlag("bool-flag", "bool-flag description")
+                .withEntryPoint(options -> {})
+                    .requires("integer-opt", "string-opt")
+            .build().run();
+        } catch (RuntimeException ex) {
+            assertEquals(
+                String.format(
+                    "The %s#requires() method must be apply on an option",
+                        CmdLineAppBuilder.class.getName()
+                ),
+                ex.getMessage()
+            );
             throw ex;
         }
     }

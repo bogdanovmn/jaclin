@@ -6,7 +6,7 @@
 
     <groupId>com.github.bogdanovmn.cmdline</groupId>
     <artifactId>cmdline-app</artifactId>
-    <version>3.0.0</version>
+    <version>3.1.0</version>
     <name>java-cmdline-app</name>
     <description>Java command line application arguments helper</description>
     <url>http://github.com/bogdanovmn/java-cmdline-app</url>

@@ -138,7 +138,7 @@ new CmdLineAppBuilder(new String[] {"-i", "123", "-b", "-s", "str"})
     .withArg("integer-opt", "integer option description")
     .withArg("string-opt", "string option description")
     .withFlag("bool-flag", "bool-flag description")
-    .withDependencies("bool-flag", "integer-opt", "string-opt")
+        .requires("integer-opt", "string-opt")
     .withEntryPoint(options -> {})
 .build().run();
 ```

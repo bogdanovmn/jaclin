@@ -98,9 +98,7 @@ public class CmdLineAppBuilder {
     }
 
     public CmdLineAppBuilder withShort(String shortName) {
-        if (currentOpt == null) {
-            throw new IllegalStateException("withShort() method must be apply on an option");
-        }
+        checkForCurrentOpt();
         uniqShortNames.add(shortName);
         uniqShortNames.remove(
             optionMap.get(currentOpt).getOriginal().build().getOpt()
@@ -110,17 +108,13 @@ public class CmdLineAppBuilder {
     }
 
     public CmdLineAppBuilder required() {
-        if (currentOpt == null) {
-            throw new IllegalStateException("required() method must be apply on an option");
-        }
+        checkForCurrentOpt();
         optionMap.get(currentOpt).getOriginal().required();
         return this;
     }
 
     public CmdLineAppBuilder withDefault(Object defaultValue) {
-        if (currentOpt == null) {
-            throw new IllegalStateException("withDefault() method must be apply on an option");
-        }
+        checkForCurrentOpt();
         OptionMeta meta = optionMap.get(currentOpt);
         meta.getOriginal().desc(
             String.format(
@@ -131,6 +125,27 @@ public class CmdLineAppBuilder {
         );
         optionMap.put(currentOpt, meta.withDefaultValue(defaultValue));
         return this;
+    }
+
+    public CmdLineAppBuilder requires(String... otherOptions) {
+        checkForCurrentOpt();
+        dependencies.put(
+            currentOpt,
+            new HashSet<>(Arrays.asList(otherOptions))
+        );
+        return this;
+    }
+
+    private void checkForCurrentOpt() {
+        if (currentOpt == null) {
+            throw new IllegalStateException(
+                String.format(
+                    "The %s#%s() method must be apply on an option",
+                        Thread.currentThread().getStackTrace()[2].getClassName(),
+                        Thread.currentThread().getStackTrace()[2].getMethodName()
+                )
+            );
+        }
     }
 
     public <E extends Enum<E>> CmdLineAppBuilder withEnumArg(String name, String description, Class<E> type) {
@@ -166,15 +181,6 @@ public class CmdLineAppBuilder {
     public CmdLineAppBuilder withEntryPoint(CmdLineAppEntryPoint entryPoint) {
         clearCurrentOpt();
         this.entryPoint = entryPoint;
-        return this;
-    }
-
-    public CmdLineAppBuilder withDependencies(String parentOption, String... childOptions) {
-        clearCurrentOpt();
-        dependencies.put(
-            parentOption,
-            new HashSet<>(Arrays.asList(childOptions))
-        );
         return this;
     }
 

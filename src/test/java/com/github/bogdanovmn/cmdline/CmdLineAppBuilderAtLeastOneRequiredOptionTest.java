@@ -57,7 +57,7 @@ public class CmdLineAppBuilderAtLeastOneRequiredOptionTest {
                 .withAtLeastOneRequiredOption("some-option", "flag1")
 
                 .withEntryPoint(options -> {})
-                .build().run();
+            .build().run();
         } catch (RuntimeException ex) {
             assertEquals("Unknown option: [flag1]", ex.getMessage());
             throw ex;
