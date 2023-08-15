@@ -21,7 +21,7 @@ public class CmdLineAppBuilderWithDependenciesTest {
         .build().run();
     }
 
-    @Test(expected = RuntimeException.class)
+    @Test(expected = IllegalStateException.class)
     public void shouldHandleRequiredOption() throws Exception {
         try {
             new CmdLineAppBuilder(new String[]{"-i", "123", "-b"})
@@ -31,13 +31,13 @@ public class CmdLineAppBuilderWithDependenciesTest {
                     .requires("integer-opt", "string-opt")
                 .withEntryPoint(options -> {})
             .build().run();
-        } catch (RuntimeException ex) {
+        } catch (IllegalStateException ex) {
             assertEquals("With 'bool-flag' option you must also specify these: [string-opt]", ex.getMessage());
             throw ex;
         }
     }
 
-    @Test(expected = RuntimeException.class)
+    @Test(expected = IllegalStateException.class)
     public void shouldFailForApplyingRequiresOnNonOption() throws Exception {
         try {
             new CmdLineAppBuilder(new String[]{"-i", "123", "-b"})
@@ -47,7 +47,7 @@ public class CmdLineAppBuilderWithDependenciesTest {
                 .withEntryPoint(options -> {})
                     .requires("integer-opt", "string-opt")
             .build().run();
-        } catch (RuntimeException ex) {
+        } catch (IllegalStateException ex) {
             assertEquals(
                 String.format(
                     "The %s#requires() method must be apply on an option",

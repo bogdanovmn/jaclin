@@ -6,7 +6,7 @@ import org.junit.Test;
 import static org.junit.Assert.assertEquals;
 
 public class CmdLineAppBuilderAtLeastOneRequiredOptionTest {
-    @Test(expected = RuntimeException.class)
+    @Test(expected = IllegalStateException.class)
     public void shouldRaiseAnExceptionOnAbsenceOfAtLeastOneRequiredOption() throws Exception {
         try {
             new CmdLineAppBuilder(new String[]{"-x"})
@@ -16,7 +16,7 @@ public class CmdLineAppBuilderAtLeastOneRequiredOptionTest {
                 .withAtLeastOneRequiredOption("integer-opt", "string-opt")
                 .withEntryPoint(options -> {})
             .build().run();
-        } catch (RuntimeException ex) {
+        } catch (IllegalStateException ex) {
             assertEquals("You should use at least one of these options: 'integer-opt', 'string-opt'", ex.getMessage());
             throw ex;
         }
@@ -35,7 +35,7 @@ public class CmdLineAppBuilderAtLeastOneRequiredOptionTest {
         .build().run();
     }
 
-    @Test(expected = RuntimeException.class)
+    @Test(expected = IllegalStateException.class)
     public void shouldRaiseAnExceptionOnUnknownAtLeastOneRequiredOption() throws Exception {
         try {
             new CmdLineAppBuilder(new String[]{"-m", "2", "-s", "3"})
@@ -58,7 +58,7 @@ public class CmdLineAppBuilderAtLeastOneRequiredOptionTest {
 
                 .withEntryPoint(options -> {})
             .build().run();
-        } catch (RuntimeException ex) {
+        } catch (IllegalStateException ex) {
             assertEquals("Unknown option: [flag1]", ex.getMessage());
             throw ex;
         }

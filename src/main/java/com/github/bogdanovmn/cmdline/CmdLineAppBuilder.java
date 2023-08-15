@@ -8,6 +8,7 @@ import java.util.stream.Collectors;
 public class CmdLineAppBuilder {
     private final String[] args;
     private Set<String> atLeastOneRequiredOption;
+    private MutualExclusions mutualExclusions;
     private final Map<String, OptionMeta<?>> optionMap = new HashMap<>();
     private final Map<String, Set<String>> dependencies = new HashMap<>();
     private String jarName = "<app-name>";
@@ -178,6 +179,12 @@ public class CmdLineAppBuilder {
         return this;
     }
 
+    public CmdLineAppBuilder withMutualExclusions(Object... options) {
+        clearCurrentOpt();
+        mutualExclusions = MutualExclusions.of(options);
+        return this;
+    }
+
     public CmdLineAppBuilder withEntryPoint(CmdLineAppEntryPoint entryPoint) {
         clearCurrentOpt();
         this.entryPoint = entryPoint;
@@ -188,6 +195,7 @@ public class CmdLineAppBuilder {
         clearCurrentOpt();
         CommandLine cmdLine = parserWithHelpOption();
         atLeastOneRequiredOptionValidation(cmdLine);
+        mutualExclusionsValidation(cmdLine);
         dependenciesValidation(cmdLine);
         return new CmdLineApp(entryPoint, new ParsedOptions(cmdLine, optionMap));
     }
@@ -214,28 +222,53 @@ public class CmdLineAppBuilder {
     }
 
     private void atLeastOneRequiredOptionValidation(CommandLine cmdLine) {
-        if (atLeastOneRequiredOption != null) {
-            Set<String> allOptionNames = optionMap.keySet();
-            if (!allOptionNames.containsAll(atLeastOneRequiredOption)) {
-                Set<String> unknownOptions = new HashSet<>(atLeastOneRequiredOption);
-                unknownOptions.removeAll(allOptionNames);
-                throw new IllegalStateException("Unknown option: " + unknownOptions);
-            }
+        if (atLeastOneRequiredOption == null) {
+            return;
+        }
+        Set<String> allOptionNames = optionMap.keySet();
+        if (!allOptionNames.containsAll(atLeastOneRequiredOption)) {
+            Set<String> unknownOptions = new HashSet<>(atLeastOneRequiredOption);
+            unknownOptions.removeAll(allOptionNames);
+            throw new IllegalStateException("Unknown option: " + unknownOptions);
+        }
 
-            Set<String> allRuntimeOptionNames = Arrays.stream(cmdLine.getOptions())
-                .map(Option::getLongOpt)
-                .collect(Collectors.toSet());
+        Set<String> allRuntimeOptionNames = Arrays.stream(cmdLine.getOptions())
+            .map(Option::getLongOpt)
+            .collect(Collectors.toSet());
 
-            if (allRuntimeOptionNames.stream().noneMatch(opt -> atLeastOneRequiredOption.contains(opt))) {
+        if (allRuntimeOptionNames.stream().noneMatch(opt -> atLeastOneRequiredOption.contains(opt))) {
+            throw new IllegalStateException(
+                String.format(
+                    "You should use at least one of these options: '%s'",
+                    atLeastOneRequiredOption.stream()
+                        .sorted()
+                        .collect(Collectors.joining("', '"))
+                )
+            );
+        }
+    }
+
+    private void mutualExclusionsValidation(CommandLine cmdLine) {
+        if (mutualExclusions == null) {
+            return;
+        }
+        optionMap.forEach((name, meta) -> {
+            if (mutualExclusions.contains(name) && meta.getOriginal().build().isRequired()) {
                 throw new IllegalStateException(
-                    String.format(
-                        "You should use at least one of these options: '%s'",
-                        atLeastOneRequiredOption.stream()
-                            .sorted()
-                            .collect(Collectors.joining("', '"))
-                    )
+                    String.format("Mutual exclusion options can't be required, but: %s", name)
                 );
             }
+        });
+        List<String> allRuntimeMutualExclusions = Arrays.stream(cmdLine.getOptions())
+            .map(option -> mutualExclusions.optionGroup(option.getLongOpt()))
+            .filter(group -> group != null)
+            .map(OptionsGroup::toString)
+            .sorted()
+            .collect(Collectors.toList());
+        if (allRuntimeMutualExclusions.size() > 1) {
+            throw new IllegalStateException(
+                String.format("Mutual exclusion: %s, expected only one of these", allRuntimeMutualExclusions)
+            );
         }
     }
 
