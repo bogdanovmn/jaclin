@@ -47,15 +47,21 @@ public class ParsedOptions {
 
     public Object getEnum(String optName) {
         OptionMeta opt = optMeta(optName);
-        return Enum.valueOf(
-            opt.getType(),
-            cmdLineArgs.getOptionValue(
-                optName,
-                String.valueOf(
-                    opt.getDefaultValue()
-                )
-            )
-        );
+        if (!cmdLineArgs.hasOption(optName)) {
+            return opt.getDefaultValue();
+        } else {
+            try {
+                return Enum.valueOf(
+                    opt.getType(),
+                    cmdLineArgs.getOptionValue(optName)
+                );
+            } catch (IllegalArgumentException ex) {
+                return Enum.valueOf(
+                    opt.getType(),
+                    cmdLineArgs.getOptionValue(optName).toUpperCase()
+                );
+            }
+        }
     }
 
     public String getEnumAsRawString(String optName) {

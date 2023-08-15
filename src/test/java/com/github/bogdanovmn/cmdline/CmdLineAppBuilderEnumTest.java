@@ -30,6 +30,17 @@ public class CmdLineAppBuilderEnumTest {
     }
 
     @Test
+    public void shouldHandleEnumOptionInDifferentCase() throws Exception {
+        new CmdLineAppBuilder(new String[]{"-e", "foo"})
+            .withEnumArg("enum", "enum value", EnumExample.class)
+            .withEntryPoint(options -> {
+                assertEquals(FOO, options.getEnum("enum"));
+                assertEquals("foo", options.getEnumAsRawString("enum"));
+            })
+            .build().run();
+    }
+
+    @Test
     public void shouldCreateDescriptionForEnumOption() throws Exception {
         ByteArrayOutputStream outContent = new ByteArrayOutputStream();
         PrintStream originalOut = System.out;
