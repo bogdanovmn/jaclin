@@ -151,10 +151,10 @@ You don't need to manage it in your own code.
 ## Default values support
 ```java
 new CmdLineAppBuilder(args)
-    .withEnumArg("str-opt", "...")
+    .withArg("str-opt", "...")
         .withDefault("defaul-value")
     
-    .withEnumArg("int-opt", "...")
+    .withIntArg("int-opt", "...")
         .withDefault(123)
     
     .withEntryPoint(options -> {
@@ -217,6 +217,8 @@ new CmdLineAppBuilder(args)
     .withMutualExclusions(
         "a-opt", 
         List.of("b-opt", "c-opt")
+    )
+    
     .withEntryPoint(options -> {...})
 .build().run();
 ```
