@@ -8,14 +8,28 @@ https://maven-badges.herokuapp.com/maven-central/com.github.bogdanovmn.cmdline/c
 
 This library aims to enable the usage of Apache Commons-CLI in a fluent manner with added convenience features, eliminating the need for boilerplate code.
 
-## Features
+# Table of contents
+- [**Features**](#features)
+- [**How to use it**](#how-to-use-it)
+- [**Examples**](#examples)
+  - [**If you must use one of not required options**](#if-you-must-use-one-of-not-required-options)
+  - [**If you want to connect options**](#if-you-want-to-connect-options)
+  - [**Default values support**](#default-values-support)
+  - [**Enum support with automatically description of all possible values**](#enum-support-with-automatically-description-of-all-possible-values)
+  - [**Mutual exclusions for options allows you to prevent the use of one option if another option is set**](#mutual-exclusions-for-options-allows-you-to-prevent-the-use-of-one-option-if-another-option-is-set)
+  - [**If you need something what this wrapper doesn't support, just pass original Apache's Option object**](#if-you-need-something-what-this-wrapper-doesnt-support-just-pass-original-apaches-option-object)
+- [**Real-world example**](#real-world-example)
+  - [**Configuration**](#configuration)
+  - [**Usage output**](#usage-output)
+
+# Features
 * Fluent API
 * All boilerplate code is hidden under the hood
-### Restrictions
+## Restrictions
 * Mutual exclusions for options
 * At least one of specified not required options has to be specified
 * Options dependencies
-### Convenient
+## Convenient
 * Option's short name auto-generation
 * Option's value types support
 * Default value during an option's definition level support
@@ -73,38 +87,6 @@ public class App {
 ``` 
 Note: option's short name will be generated automatically
 
-### 2.1 For a Spring CLI it would be like this
-```java
-import com.github.bogdanovmn.cmdlineapp.CmdLineAppBuilder;
-import org.springframework.boot.Banner;
-import org.springframework.boot.CommandLineRunner;
-import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
-
-@SpringBootApplication
-public class App implements CommandLineRunner {
-
-    public static void main(String[] args) {
-        SpringApplication app = new SpringApplication(App.class);
-        app.setBannerMode(Banner.Mode.OFF);
-        app.run(args);
-    }
-
-    @Override
-    public void run(String... args) throws Exception {
-        new CmdLineAppBuilder(args)
-            // ...
-            .withEntryPoint(
-                options -> {
-                    // ...
-                }
-            )
-        .build().run();
-    }
-}
-
-``` 
-
 ## 3. Run the application with -h flag in order to see the usage text (it will be automatically constructed)
 ```bash
 usage: java -jar my-jar-name.jar [-f] [-h] -m <STR> [-s <STR>] [-i <INT>]
@@ -116,8 +98,7 @@ My program does ...
  -h,--help                     show this message
 ```
 
-# Features details and examples
-
+# Examples
 ## If you must use one of not required options 
 ```java
 new CmdLineAppBuilder(args)
@@ -135,7 +116,7 @@ new CmdLineAppBuilder(args)
 .build().run();
 ``` 
 
-## If you want to connect options, there is a solution
+## If you want to connect options
 ```java
 new CmdLineAppBuilder(args)
     .withArg("a-opt", "...")
