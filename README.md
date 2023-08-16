@@ -1,21 +1,35 @@
 
 
+[![Maven Central](
+https://maven-badges.herokuapp.com/maven-central/com.github.bogdanovmn.cmdline/cmdline-app/badge.svg
+)]( https://maven-badges.herokuapp.com/maven-central/com.github.bogdanovmn.cmdline/cmdline-app)
+
 # Why another CLI-library?
 
-For my CLI applications I use Apache Commons-Cli library. It is powerful tool. Unfortunately, it is too verbose. 
-This library allows you to use commons-cli in the fluent way. No more boilerplate code. 
+This library aims to enable the usage of Apache Commons-CLI in a fluent manner with added convenience features, eliminating the need for boilerplate code.
+
+## Features
+* Fluent API
+* All boilerplate code is hidden under the hood
+### Restrictions
+* Mutual exclusions for options
+* At least one of specified not required options has to be specified
+* Options dependencies
+### Convenient
+* Option's short name auto-generation
+* Option's value types support
+* Default value during an option's definition level support
+* Enum type for options support
+* Usage text (--help) auto-configuration with default values and Enum's possible values description
 
 # How to use it
 
 ## 1. Get the latest dependency
-[![Maven Central](
-    https://maven-badges.herokuapp.com/maven-central/com.github.bogdanovmn.cmdline/cmdline-app/badge.svg
-)]( https://maven-badges.herokuapp.com/maven-central/com.github.bogdanovmn.cmdline/cmdline-app)
 ```xml
 <dependency>
     <groupId>com.github.bogdanovmn.cmdline</groupId>
     <artifactId>cmdline-app</artifactId>
-    <version>...</version>
+    <version>3.1.0</version>
 </dependency>
 ```
 
@@ -36,20 +50,11 @@ public class App {
             .withFlag("flag", "...description of the option...")
     
             // Optional integer argument 
-            .withInt("int-opt", "...description of the option...")
-            
-            // If you need something what this wrapper doesn't support, 
-            // you can pass original Apache's Option object
-            .withCustomOption(
-                Option.builder()
-                    .longOpt("custom-option")
-                    .desc("...description of the option...")
-            )
+            .withArgInt("int-option", "...description of the option...")
             
             // Mandatory option
-            // note that we specified the short name directly (usually it is generating automatically)
             .withArg("mandatory-option", "...description of the option...")
-                .withShort("m") 
+                .withShort("m") // option's short name definition (by default, it is generating automatically)
                 .required()
             
             .withEntryPoint(
@@ -102,63 +107,60 @@ public class App implements CommandLineRunner {
 
 ## 3. Run the application with -h flag in order to see the usage text (it will be automatically constructed)
 ```bash
-usage: java -jar my-jar-name.jar [--custom-option] [-f] [-h] -m <ARG> [-s
-       <ARG>]
+usage: java -jar my-jar-name.jar [-f] [-h] -m <STR> [-s <STR>] [-i <INT>]
 My program does ...
-    --custom-option            ...description of the option...
+ -i,--int-option <INT>         ...description of the option...
  -f,--flag                     ...description of the option...
+ -m,--mandatory-option <STR>   ...description of the option...
+ -s,--some-option <STR>        ...description of the option...
  -h,--help                     show this message
- -m,--mandatory-option <ARG>   ...description of the option...
- -s,--some-option <ARG>        ...description of the option...
 ```
 
-# Features
+# Features details and examples
 
-## If you must specify one of options, there is a simple solution: 
+## If you must use one of not required options 
 ```java
 new CmdLineAppBuilder(args)
+    .withArg("required-opt", "...").required()
     // Optional argument
-    .withArg("a-option", "...")
-    .withArg("b-option", "...")
+    .withArg("a-opt", "...")
+    .withArg("b-opt", "...")
     
-    // "a-option" or "b-option" must be specified
-    .withAtLeastOneRequiredOption("a-option", "b-option")
+    // "a-opt" or "b-opt" must be specified
+    .withAtLeastOneRequiredOption("a-opt", "b-opt")
     
     .withEntryPoint(
-        options -> {
-            ...
-        }
+        options -> {...}
     )
 .build().run();
 ``` 
 
 ## If you want to connect options, there is a solution
 ```java
-new CmdLineAppBuilder(new String[] {"-i", "123", "-b", "-s", "str"})
-    .withArg("integer-opt", "integer option description")
-    .withArg("string-opt", "string option description")
-    .withFlag("bool-flag", "bool-flag description")
-        .requires("integer-opt", "string-opt")
-    .withEntryPoint(options -> {})
+new CmdLineAppBuilder(args)
+    .withArg("a-opt", "...")
+    .withArg("b-opt", "...")
+    .withFlag("c-opt", "...")
+        .requires("a-opt", "b-opt")
+    .withEntryPoint(options -> {...})
 .build().run();
 ```
-It means that if you specify "bool-flag" option, you must also specify it's dependencies:  "integer-opt" & "string-opt"
+It means that if you specify "c-opt" option, you must also specify it's dependencies:  "a-opt" & "b-opt"
 You don't need to manage it in your own code.
 
 ## Default values support
 ```java
-new CmdLineAppBuilder(new String[] {})
-    .withEnumArg("str-opt", "str-opt value description")
+new CmdLineAppBuilder(args)
+    .withEnumArg("str-opt", "...")
         .withDefault("defaul-value")
     
-    .withEnumArg("int-opt", "int-opt value description")
+    .withEnumArg("int-opt", "...")
         .withDefault(123)
     
     .withEntryPoint(options -> {
         if ("default-value".equals(options.get("str-opt"))) {
             // str-opt value is default
         }
-
         if (123 == options.getInt("int-opt"))) {
             // int-opt value is default
         }
@@ -190,4 +192,158 @@ new CmdLineAppBuilder(new String[] {"-e", "FOO"})
         }
     })
 .build().run();
+```
+
+## Mutual exclusions for options allows you to prevent the use of one option if another option is set
+### Example 1
+```java
+new CmdLineAppBuilder(args)
+    .withArg("a-opt", "...")
+    .withArg("b-opt", "...")
+
+    .withMutualExclusions("a-opt", "b-opt")
+    
+    .withEntryPoint(options -> {...})
+.build().run();
+```
+There you can use either the a-opt or the b-opt
+### Example 2
+```java
+new CmdLineAppBuilder(args)
+    .withArg("a-opt", "...")
+    .withArg("b-opt", "...")
+    .withArg("c-opt", "...")
+
+    .withMutualExclusions(
+        "a-opt", 
+        List.of("b-opt", "c-opt")
+    .withEntryPoint(options -> {...})
+.build().run();
+```
+There you can use either the a-opt or one of these: b-opt or c-opt
+
+## If you need something what this wrapper doesn't support, just pass original Apache's Option object
+```java
+.withCustomOption(
+    Option.builder()
+        .longOpt("custom-option")
+        .desc("...description of the option...")
+        ...
+)
+```
+
+# Real-world example
+## Configuration
+```java
+public class App {
+    private static final String OPT_INDEX_FILE = "index-file";
+    private static final String OPT_SEARCH_TITLE_TERM = "search-title-term";
+    private static final String OPT_SEARCH_AUTHOR_TERM = "search-author-term";
+    private static final String OPT_SEARCH_ENGINE = "search-engine";
+    private static final String OPT_ARCHIVE_DIR = "archive-dir";
+    private static final String OPT_SEARCH_ENGINE_URL = "search-engine-dir";
+    private static final String OPT_SEARCH_ENGINE_CREATE_INDEX = "search-engine-create-index";
+    private static final String OPT_SEARCH_MAX_RESULTS = "search-max-results";
+    private static final String OPT_EXPORT_BY_ID = "export-book-by-id";
+    private static final String OPT_EXPORT_TO = "export-to";
+    private static final String OPT_SHOW_STATISTIC = "show-statistic";
+
+
+    private static final int MAX_RESULTS_DEFAULT = 30;
+
+    public static void main(String[] args) throws Exception {
+
+        new CmdLineAppBuilder(args)
+            .withJarName("inpx-tool")
+            .withDescription("INPX file browser")
+
+            .withArg(OPT_INDEX_FILE, "an index file name")
+                .required()
+
+            .withEnumArg(OPT_SEARCH_ENGINE, "search engine", SearchEngineMethod.class)
+                .withDefault(SearchEngineMethod.SIMPLE)
+
+            .withIntArg(OPT_SEARCH_MAX_RESULTS, "search max results")
+                .withDefault(MAX_RESULTS_DEFAULT)
+
+            .withIntArg(OPT_EXPORT_BY_ID, "export FB2 file by id")
+                .requires(
+                    OPT_EXPORT_TO,
+                    OPT_ARCHIVE_DIR
+                )
+            .withArg(OPT_ARCHIVE_DIR, "an archive directory path")
+            .withArg(OPT_EXPORT_TO, "export FB2 file target directory")
+
+            .withArg(OPT_SEARCH_TITLE_TERM, "a search query title term")
+            .withArg(OPT_SEARCH_AUTHOR_TERM, "a search query author term")
+            .withArg(OPT_SEARCH_ENGINE_URL, "search engine index directory (only for Lucene engine)")
+            .withFlag(OPT_SEARCH_ENGINE_CREATE_INDEX, "create search index (only for Lucene engine)")
+                .requires(OPT_SEARCH_ENGINE_URL)
+
+            .withFlag(OPT_SHOW_STATISTIC, "show books statistic")
+
+            .withAtLeastOneRequiredOption(
+                OPT_EXPORT_BY_ID,
+                OPT_SEARCH_AUTHOR_TERM,
+                OPT_SEARCH_TITLE_TERM,
+                OPT_SEARCH_ENGINE_CREATE_INDEX,
+                OPT_SHOW_STATISTIC
+            )
+
+            .withMutualExclusions(
+                OPT_EXPORT_BY_ID,
+                OPT_SEARCH_ENGINE_CREATE_INDEX,
+                OPT_SHOW_STATISTIC,
+                List.of(
+                    OPT_SEARCH_AUTHOR_TERM,
+                    OPT_SEARCH_TITLE_TERM
+                )
+            )
+
+            .withEntryPoint(
+                options -> {
+                    InpxFile booksIndex = new InpxFile(options.get(OPT_INDEX_FILE));
+
+                    if (options.getBool(OPT_SHOW_STATISTIC)) {
+                        showStatistic(booksIndex);
+                    } else if (options.has(OPT_EXPORT_BY_ID)) {
+                        exportToFile(options);
+                    } else if (options.getBool(OPT_SEARCH_ENGINE_CREATE_INDEX)) {
+                        createLuceneIndex(
+                            searchEngine(options, booksIndex)
+                        );
+                    } else if (options.has(OPT_SEARCH_TITLE_TERM) || options.has(OPT_SEARCH_AUTHOR_TERM)) {
+                        searchBooks(
+                            searchEngine(options, booksIndex),
+                            SearchQuery.builder()
+                                .author(options.get(OPT_SEARCH_AUTHOR_TERM))
+                                .title(options.get(OPT_SEARCH_TITLE_TERM))
+                            .build()
+                        );
+                    }
+                }
+            ).build().run();
+    }
+}
+```
+## Usage output
+```
+usage: java -jar inpx-tool.jar -i <STR> [-s <ENUM>] [-smr <INT>] [-e <INT>] [-a <STR>] [-et <STR>] [-stt <STR>] [-sat
+       <STR>] [-sed <STR>] [-seci] [-ss] [-h]
+INPX file browser
+  -i,--index-file <STR>                an index file name
+  -s,--search-engine <ENUM>            search engine
+                                       Possible values: SIMPLE | FUZZY | LUCENE
+                                       Default: SIMPLE
+  -smr,--search-max-results <INT>      search max results
+                                       Default: 30
+  -e,--export-book-by-id <INT>         export FB2 file by id
+  -a,--archive-dir <STR>               an archive directory path
+  -et,--export-to <STR>                export FB2 file target directory
+  -stt,--search-title-term <STR>       a search query title term
+  -sat,--search-author-term <STR>      a search query author term
+  -sed,--search-engine-dir <STR>       search engine index directory (only for Lucene engine)
+  -seci,--search-engine-create-index   create search index (only for Lucene engine)
+  -ss,--show-statistic                 show books statistic
+  -h,--help                            show this message
 ```
