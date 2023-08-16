@@ -1,9 +1,8 @@
 package com.github.bogdanovmn.cmdline;
 
+import com.github.bogdanovmn.cmdline.test.SystemOutputCapture;
 import org.junit.Test;
 
-import java.io.ByteArrayOutputStream;
-import java.io.PrintStream;
 import java.util.Arrays;
 
 import static org.junit.Assert.assertEquals;
@@ -42,22 +41,20 @@ public class CmdLineAppBuilderTest {
     }
 
     @Test
-    public void shouldHandleDefaultsDescription() throws Exception {
-        ByteArrayOutputStream outContent = new ByteArrayOutputStream();
-        PrintStream originalOut = System.out;
-        System.setOut(new PrintStream(outContent));
+    public void shouldHandleDefaultsDescription() {
+        String[] lines = new SystemOutputCapture(() -> {
+            try {
+                new CmdLineAppBuilder(new String[]{"-h"})
+                    .withArg("str-opt", "source arg description").withDefault("123")
+                    .withIntArg("int-opt", "source arg description").withShort("y").withDefault(777)
+                    .withFlag("bool-flag", "bool-flag description")
+                    .withEntryPoint(options -> {})
+                .build().run();
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+        }).outputOfExecution();
 
-        new CmdLineAppBuilder(new String[]{"-h"})
-            .withArg("str-opt", "source arg description").withDefault("123")
-            .withIntArg("int-opt", "source arg description").withShort("y").withDefault(777)
-            .withFlag("bool-flag", "bool-flag description")
-            .withEntryPoint(options -> {})
-        .build().run();
-
-        String[] lines = outContent.toString().split("\n");
-
-        System.setOut(originalOut);
-        Arrays.stream(lines).forEach(System.out::println);
         assertEquals("output lines count", 7, lines.length);
         assertTrue("default-1 description", lines[2].contains("Default: 123"));
         assertTrue("default-2 description", lines[5].contains("Default: 777"));

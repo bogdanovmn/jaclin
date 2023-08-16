@@ -1,10 +1,7 @@
 package com.github.bogdanovmn.cmdline;
 
+import com.github.bogdanovmn.cmdline.test.SystemOutputCapture;
 import org.junit.Test;
-
-import java.io.ByteArrayOutputStream;
-import java.io.PrintStream;
-import java.util.Arrays;
 
 import static com.github.bogdanovmn.cmdline.CmdLineAppBuilderEnumTest.EnumExample.BAR;
 import static com.github.bogdanovmn.cmdline.CmdLineAppBuilderEnumTest.EnumExample.BAZ;
@@ -41,23 +38,20 @@ public class CmdLineAppBuilderEnumTest {
     }
 
     @Test
-    public void shouldCreateDescriptionForEnumOption() throws Exception {
-        ByteArrayOutputStream outContent = new ByteArrayOutputStream();
-        PrintStream originalOut = System.out;
+    public void shouldCreateDescriptionForEnumOption() {
+        String[] lines = new SystemOutputCapture(() -> {
+            try {
+                new CmdLineAppBuilder(new String[]{"-e", "foo", "-h"})
+                    .withEnumArg("enum", "enum value", EnumExample.class).withDefault(BAZ)
+                    .withEntryPoint(options -> {
+                        assertEquals("foo", options.get("enum"));
+                    })
+                .build().run();
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+        }).outputOfExecution();
 
-        System.setOut(new PrintStream(outContent));
-
-        new CmdLineAppBuilder(new String[]{"-e", "foo", "-h"})
-            .withEnumArg("enum", "enum value", EnumExample.class).withDefault(BAZ)
-            .withEntryPoint(options -> {
-                assertEquals("foo", options.get("enum"));
-            })
-        .build().run();
-
-        String[] lines = outContent.toString().split("\n");
-
-        System.setOut(originalOut);
-        Arrays.stream(lines).forEach(System.out::println);
         assertEquals("output lines count", 5, lines.length);
         assertTrue("possible values description", lines[2].contains("Possible values: FOO | BAR | BAZ"));
         assertTrue("possible values description", lines[3].contains("Default: BAZ"));

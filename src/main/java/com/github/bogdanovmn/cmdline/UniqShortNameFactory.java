@@ -1,6 +1,10 @@
 package com.github.bogdanovmn.cmdline;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 class UniqShortNameFactory {
     private final Map<String, Integer> alreadyProduced = new HashMap<>();

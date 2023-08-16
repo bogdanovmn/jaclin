@@ -1,21 +1,35 @@
 package com.github.bogdanovmn.cmdline;
 
-import org.apache.commons.cli.*;
+import org.apache.commons.cli.CommandLine;
+import org.apache.commons.cli.DefaultParser;
+import org.apache.commons.cli.HelpFormatter;
+import org.apache.commons.cli.Option;
+import org.apache.commons.cli.Options;
+import org.apache.commons.cli.ParseException;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 public class CmdLineAppBuilder {
     private final String[] args;
-    private Set<String> atLeastOneRequiredOption;
-    private MutualExclusions mutualExclusions;
     private final Map<String, OptionMeta<?>> optionMap = new HashMap<>();
     private final Map<String, Set<String>> dependencies = new HashMap<>();
+    private final UniqShortNameFactory uniqShortNames = new UniqShortNameFactory();
+    private Set<String> atLeastOneRequiredOption;
+    private MutualExclusions mutualExclusions;
     private String jarName = "<app-name>";
     private String description = "";
     private CmdLineAppEntryPoint entryPoint;
-    private final UniqShortNameFactory uniqShortNames = new UniqShortNameFactory();
     private String currentOpt = null;
+
+    private static final String HELP_OPT_SHORT_NAME = "h";
 
     public CmdLineAppBuilder(String[] args) {
         this.args = args;
@@ -26,6 +40,11 @@ public class CmdLineAppBuilder {
     }
 
     private void setCurrentOpt(String optName) {
+        // Before the first option definition we must add the default "--help" option
+        // We can do this in Ctor but it is a bad practice
+        if (optionMap.isEmpty()) {
+            withHelpFlag();
+        }
         if (optionMap.containsKey(optName)) {
             throw new IllegalStateException(
                 String.format("Option '%s' already defined", optName)
@@ -96,6 +115,19 @@ public class CmdLineAppBuilder {
             )
         );
         return this;
+    }
+
+    private void withHelpFlag() {
+        String name = "help";
+        uniqShortNames.add(HELP_OPT_SHORT_NAME);
+        optionMap.put(
+            name,
+            OptionMeta.bool(
+                Option.builder(HELP_OPT_SHORT_NAME)
+                    .longOpt(name)
+                    .desc("show this message")
+            )
+        );
     }
 
     public CmdLineAppBuilder withShort(String shortName) {
@@ -273,7 +305,6 @@ public class CmdLineAppBuilder {
     }
 
     private CommandLine parserWithHelpOption() {
-        withFlag("help", "show this message");
         CommandLine cmdLine;
         try {
             cmdLine = new DefaultParser().parse(options(), args);
@@ -282,7 +313,7 @@ public class CmdLineAppBuilder {
             throw new RuntimeException(e.getMessage());
         }
 
-        if (cmdLine.hasOption("h")) {
+        if (cmdLine.hasOption(HELP_OPT_SHORT_NAME)) {
             printHelp();
             entryPoint = doNothing -> {};
         }
@@ -293,9 +324,11 @@ public class CmdLineAppBuilder {
         HelpFormatter helpFormatter = new HelpFormatter();
         helpFormatter.setOptionComparator(
             Comparator.comparingInt(
-                option -> uniqShortNames.orderNumberByShortName(
-                    option.getOpt()
-                )
+                option -> HELP_OPT_SHORT_NAME.equals(option.getOpt())
+                    ? Integer.MAX_VALUE // --help option should be in the bottom
+                    : uniqShortNames.orderNumberByShortName(
+                        option.getOpt()
+                    )
             )
         );
         helpFormatter.setLeftPadding(2);
