@@ -53,12 +53,12 @@ class MutualExclusions {
         return new MutualExclusions(groups);
     }
 
-    public boolean contains(String optName) {
+    boolean contains(String optName) {
         return groups.stream()
             .anyMatch(g -> g.contains(optName));
     }
 
-    public OptionsGroup optionGroup(String optName) {
+    OptionsGroup optionGroup(String optName) {
         return groups.stream()
             .filter(g -> g.contains(optName))
             .findFirst().orElse(null);

@@ -27,7 +27,7 @@ This library aims to enable the usage of Apache Commons-CLI in a fluent manner w
 * All boilerplate code is hidden under the hood
 ## Restrictions
 * Mutual exclusions for options
-* At least one of specified not required options has to be specified
+* At least one of specified not required options has to be used
 * Options dependencies
 ## Convenient
 * Option's short name auto-generation
@@ -43,7 +43,7 @@ This library aims to enable the usage of Apache Commons-CLI in a fluent manner w
 <dependency>
     <groupId>com.github.bogdanovmn.cmdline</groupId>
     <artifactId>cmdline-app</artifactId>
-    <version>3.1.0</version>
+    <version>3.1.1</version>
 </dependency>
 ```
 
