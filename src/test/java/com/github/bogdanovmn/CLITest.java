@@ -3,13 +3,16 @@ package com.github.bogdanovmn;
 import com.github.bogdanovmn.jaclin.CLI;
 import org.junit.Test;
 
+import static com.github.bogdanovmn.CLITest.MyEnum.FOO;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 public class CLITest {
     enum MyEnum { FOO, BAR, BAZ }
 
     @Test
-    public void shouldHandleOptions() throws Exception {
+    public void shouldHandleOptions() {
         new CLI("app-name", "description")
             .withRequiredOptions()
                 .strArg("a-opt", "description")
@@ -26,10 +29,13 @@ public class CLITest {
                 .atLeastOneShouldBeUsed("e-opt", "x-opt")
             .withEntryPoint(
                 options -> {
-                    assertEquals("a1", options.get("a-opt"));
                     assertEquals(123, (long) options.getInt("x-opt"));
+                    assertEquals("a1", options.get("a-opt"));
+                    assertEquals(FOO, options.getEnum("e-opt"));
+                    assertTrue(options.enabled("y-opt"));
+                    assertFalse(options.enabled("y-opt-unknown"));
                 }
             )
-            .run("-a", "a1", "-x", "123");
+            .run("-a", "a1", "-x", "123", "-e", "FOO", "-y");
     }
 }

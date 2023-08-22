@@ -2,8 +2,10 @@ package com.github.bogdanovmn.jaclin;
 
 import lombok.RequiredArgsConstructor;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 @RequiredArgsConstructor
 public class ParsedOptions {
@@ -51,5 +53,9 @@ public class ParsedOptions {
             );
         }
         return opt;
+    }
+
+    Set<String> names() {
+        return new HashSet<>(options.keySet());
     }
 }

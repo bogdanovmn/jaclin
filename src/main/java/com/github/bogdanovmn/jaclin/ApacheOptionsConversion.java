@@ -18,6 +18,7 @@ class ApacheOptionsConversion {
                     .option(oo.getShortName())
                     .desc(oo.getDescription())
                     .required(oo.isRequired())
+                    .hasArg(!oo.getType().equals(Boolean.class))
                     .argName(
                         argRenderName(oo.getType())
                     )
