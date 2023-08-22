@@ -14,8 +14,17 @@ class CLIInstance implements Runner {
 
     @Override
     public void run(String... args) {
-        ParsedOptions runtimeOptions = new ApacheCLIUserInputParser(definedOptions).parsedOptions(args);
-        optionsRestrictions.validate(definedOptions, runtimeOptions);
-        task.accept(runtimeOptions);
+        ParsedOptions runtimeOptions;
+        try {
+            runtimeOptions = new ApacheCLIUserInputParser(definedOptions).parsedOptions(args);
+            optionsRestrictions.validate(definedOptions, runtimeOptions);
+            if (runtimeOptions.has("help")) {
+                usageRender.print();
+            } else {
+                task.accept(runtimeOptions);
+            }
+        } catch (ArgumentsParsingException ex) {
+            System.err.printf("CLI arguments parsing error: %s%n", ex.getMessage());
+        }
     }
 }

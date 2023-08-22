@@ -3,35 +3,33 @@ package com.github.bogdanovmn;
 import com.github.bogdanovmn.jaclin.CLI;
 import org.junit.Test;
 
+import static org.junit.Assert.assertEquals;
+
 public class CLITest {
     enum MyEnum { FOO, BAR, BAZ }
 
     @Test
     public void shouldHandleOptions() throws Exception {
         new CLI("app-name", "description")
-            .withRequiredOptions() // OptionsBuilder
-                .strArg("a-opt", "description") // all builders
+            .withRequiredOptions()
+                .strArg("a-opt", "description")
                     .hasDefault("def")
                     .hasShortName("a")
                     .requires("e-opt")
-                .intArg("b-opt", "description")
-			        .asList()
-            .withOptions() // OptionsBuilder
-                .strArg("x-opt", "description")
+                .intArg("x-opt", "description")
+            .withOptions()
+                .intArg("b-opt", "description").asList()
                 .flag("y-opt", "description")
                 .enumArg("e-opt", "description", MyEnum.class)
-	        .withRestrictions() // restrictions builder
-                .mutualExclusions("x-opt", "y-opt") // CLI builder
+	        .withRestrictions()
+                .mutualExclusions("x-opt", "y-opt")
                 .atLeastOneShouldBeUsed("e-opt", "x-opt")
             .withEntryPoint(
-                        options -> {
-//                            int = options.getInt("b-opt"); // first entry
-//                            List<Integer> b = options.getIntList("b-opt"); // :-\
-//                            String a = options.get("a-opt");
-//                            boolean y = options.enabled("y-opt");
-//                            MyEnum e = (MyEnum) options.getEnum("e-opt");
-                        }
-                    ) // Runner
-            .run("-h");
+                options -> {
+                    assertEquals("a1", options.get("a-opt"));
+                    assertEquals(123, (long) options.getInt("x-opt"));
+                }
+            )
+            .run("-a", "a1", "-x", "123");
     }
 }
