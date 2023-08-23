@@ -1,8 +1,10 @@
 package com.github.bogdanovmn.jaclin;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 class OptionsBuilder implements OptionsInProgressBuilder {
     private final CLIBuilder cliBuilder;
@@ -73,12 +75,15 @@ class OptionsBuilder implements OptionsInProgressBuilder {
             .shortName(shortName)
             .description(description)
             .isRequired(false)
-            .defaultValue(false)
             .type(Boolean.class);
         return this;
     }
 
     public OptionsInProgressBuilder hasShortName(String shortName) {
+        uniqShortNames.remove(
+            currentOption.build().getShortName()
+        );
+        uniqShortNames.add(shortName);
         currentOption.shortName(shortName);
         return this;
     }
@@ -110,11 +115,13 @@ class OptionsBuilder implements OptionsInProgressBuilder {
 
     @Override
     public RestrictionsStarterBuilder withRestrictions() {
+        addCurrentOption();
         return restrictionsBuilder;
     }
 
     @Override
     public Runner withEntryPoint(Consumer<ParsedOptions> task) {
+        addCurrentOption();
         return cliBuilder.withEntryPoint(task);
     }
 
@@ -141,14 +148,36 @@ class OptionsBuilder implements OptionsInProgressBuilder {
         if (options.isEmpty()) {
             withHelpFlag();
         }
+        addCurrentOption();
         if (options.stream().anyMatch(opt -> opt.getName().equals(optName))) {
             throw new IllegalStateException(
-                String.format("Option '%s' already defined", optName)
+                String.format("Option '%s' is already defined", optName)
             );
         }
-        if (currentOption != null) {
-            options.add(currentOption.build());
-        }
         return uniqShortNames.produce(optName);
+    }
+
+    private void addCurrentOption() {
+        if (currentOption != null) {
+            Option definition = currentOption.build();
+            String description = definition.getDescription();
+            if (definition.getType().isEnum()) {
+                Class<? extends Enum> enumType = (Class<? extends Enum>) definition.getType();
+                description = String.format(
+                    "%s%nPossible values: %s",
+                        description,
+                        Arrays.stream(enumType.getEnumConstants())
+                            .map(Enum::name)
+                            .collect(Collectors.joining(" | "))
+                );
+            }
+            if (definition.getDefaultValue() != null) {
+                description = String.format("%s%nDefault: %s", description, definition.getDefaultValue());
+            }
+            options.add(
+                currentOption.description(description)
+                    .build()
+            );
+        }
     }
 }

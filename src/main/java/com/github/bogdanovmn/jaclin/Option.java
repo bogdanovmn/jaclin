@@ -18,4 +18,8 @@ class Option {
     Object defaultValue;
     @NonNull
     Class<?> type;
+
+    boolean isFlag() {
+        return type.equals(Boolean.class);
+    }
 }

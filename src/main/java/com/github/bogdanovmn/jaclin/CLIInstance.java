@@ -24,7 +24,9 @@ class CLIInstance implements Runner {
                 task.accept(runtimeOptions);
             }
         } catch (ArgumentsParsingException ex) {
-            System.err.printf("CLI arguments parsing error: %s%n", ex.getMessage());
+//            System.err.printf("CLI arguments parsing error: %s%n", ex.getMessage());
+//            usageRender.print();
+            throw new RuntimeException(ex.getMessage());
         }
     }
 }

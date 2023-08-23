@@ -1,4 +1,4 @@
-package com.github.bogdanovmn.cmdline.test;
+package com.github.bogdanovmn.test;
 
 import lombok.RequiredArgsConstructor;
 

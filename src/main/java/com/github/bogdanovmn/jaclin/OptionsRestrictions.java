@@ -16,17 +16,28 @@ class OptionsRestrictions {
 
     public void validate(List<Option> definedOptions, ParsedOptions runtimeOptions) {
         atLeastOneRequiredOptionValidation(definedOptions, runtimeOptions);
-        dependenciesValidation(runtimeOptions);
+        dependenciesValidation(definedOptions, runtimeOptions);
         mutualExclusionsValidation(definedOptions, runtimeOptions);
     }
 
-    private void dependenciesValidation(ParsedOptions runtimeOptions) {
+    private void dependenciesValidation(List<Option> definedOptions, ParsedOptions runtimeOptions) {
         if (!dependencies.isEmpty()) {
-            Set<String> allOptions = runtimeOptions.names();
+            Set<String> allRuntimeOptions = runtimeOptions.names();
+            Set<String> allDefinedOptions = definedOptions.stream().map(Option::getName).collect(Collectors.toSet());
             dependencies.forEach((parent, child) -> {
-                if (allOptions.contains(parent) && !allOptions.containsAll(child)) {
+                Set<String> unknown = child.stream().filter(
+                    optName -> !allDefinedOptions.contains(optName)
+                ).collect(Collectors.toSet());
+                if (!unknown.isEmpty()) {
+                    throw new IllegalStateException(
+                        String.format(
+                            "Unknown options in dependencies configuration: %s", unknown
+                        )
+                    );
+                }
+                if (allRuntimeOptions.contains(parent) && !allRuntimeOptions.containsAll(child)) {
                     Set<String> missedOptions = new HashSet<>(child);
-                    missedOptions.removeAll(allOptions);
+                    missedOptions.removeAll(allRuntimeOptions);
                     throw new IllegalStateException(
                         String.format(
                             "With '%s' option you must also specify these: %s",

@@ -31,7 +31,11 @@ class RuntimeOption {
     <T> List<T> values(Class<T> expectedType) {
         checkType(expectedType);
         if (rawValues == null) {
-            return Collections.singletonList((T)optionDefinition.getDefaultValue());
+            return optionDefinition.getDefaultValue() == null
+                ? Collections.emptyList()
+                : Collections.singletonList(
+                    (T) optionDefinition.getDefaultValue()
+                );
         } else {
             List<T> result = new ArrayList<>(rawValues.length);
             for (String rawValue : rawValues) {
@@ -50,7 +54,7 @@ class RuntimeOption {
         } else {
             if (optionDefinition.getType().equals(Integer.class)) {
                 value = Integer.parseInt(rawValue);
-            } else if (optionDefinition.getType().equals(Enum.class)) {
+            } else if (optionDefinition.getType().isEnum()) {
                 value = parseEnum(rawValue);
             }
         }
@@ -58,7 +62,11 @@ class RuntimeOption {
     }
 
     void checkType(Class<?> expectedType) {
-        if (!optionDefinition.getType().equals(expectedType)) {
+        if (
+            Enum.class.equals(expectedType) && !optionDefinition.getType().isEnum()
+            ||
+            !Enum.class.equals(expectedType) && !optionDefinition.getType().equals(expectedType)
+        ) {
             throw new IllegalArgumentException(
                 String.format(
                     "Argument %s is not %s but %s",
@@ -72,10 +80,10 @@ class RuntimeOption {
 
     private Enum<?> parseEnum(String rawValue) {
         try {
-            return Enum.valueOf((Class<? extends Enum>)optionDefinition.getType(), rawValue);
+            return Enum.valueOf((Class<? extends Enum>) optionDefinition.getType(), rawValue);
         } catch (IllegalArgumentException ex) {
             return Enum.valueOf(
-                (Class<? extends Enum>)optionDefinition.getType(),
+                (Class<? extends Enum>) optionDefinition.getType(),
                 rawValue.toUpperCase()
             );
         }

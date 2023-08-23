@@ -1,4 +1,4 @@
-package com.github.bogdanovmn.cmdline;
+package com.github.bogdanovmn.jaclin;
 
 import org.junit.Test;
 

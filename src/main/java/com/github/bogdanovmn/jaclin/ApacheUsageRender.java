@@ -21,7 +21,7 @@ class ApacheUsageRender implements UsageRender {
     @Override
     public void print() {
         HelpFormatter helpFormatter = new HelpFormatter();
-        Map<String, Integer> optIndex = IntStream.of(0, options.size()).boxed()
+        Map<String, Integer> optIndex = IntStream.range(0, options.size()).boxed()
             .collect(
                 toMap(i -> options.get(i).getName(), Function.identity())
             );

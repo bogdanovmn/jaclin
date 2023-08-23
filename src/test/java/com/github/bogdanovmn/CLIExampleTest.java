@@ -3,12 +3,12 @@ package com.github.bogdanovmn;
 import com.github.bogdanovmn.jaclin.CLI;
 import org.junit.Test;
 
-import static com.github.bogdanovmn.CLITest.MyEnum.FOO;
+import static com.github.bogdanovmn.CLIExampleTest.MyEnum.FOO;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-public class CLITest {
+public class CLIExampleTest {
     enum MyEnum { FOO, BAR, BAZ }
 
     @Test
@@ -25,7 +25,7 @@ public class CLITest {
                 .flag("y-opt", "description")
                 .enumArg("e-opt", "description", MyEnum.class)
 	        .withRestrictions()
-                .mutualExclusions("x-opt", "y-opt")
+                .mutualExclusions("b-opt", "y-opt")
                 .atLeastOneShouldBeUsed("e-opt", "x-opt")
             .withEntryPoint(
                 options -> {
