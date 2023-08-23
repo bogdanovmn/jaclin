@@ -1,7 +1,7 @@
 package com.github.bogdanovmn;
 
-import com.github.bogdanovmn.test.SystemOutputCapture;
 import com.github.bogdanovmn.jaclin.CLI;
+import com.github.bogdanovmn.test.SystemOutputCapture;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;

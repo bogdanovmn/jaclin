@@ -1,6 +1,5 @@
 package com.github.bogdanovmn;
 
-import com.github.bogdanovmn.cmdline.CmdLineAppBuilder;
 import com.github.bogdanovmn.jaclin.CLI;
 import org.junit.Test;
 
