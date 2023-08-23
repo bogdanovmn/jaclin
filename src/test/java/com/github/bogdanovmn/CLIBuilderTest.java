@@ -8,6 +8,7 @@ import java.util.Arrays;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 public class CLIBuilderTest {
@@ -34,10 +35,12 @@ public class CLIBuilderTest {
             .withOptions()
                 .strArg("str-opt", "source arg description").hasDefault("123")
                 .intArg("int-opt", "source arg description").hasDefault(777)
+                .intArg("null-opt", "source arg description")
                 .flag("bool-flag", "bool-flag description")
             .withEntryPoint(options -> {
                 assertEquals("123", options.get("str-opt"));
                 assertEquals(777, (long) options.getInt("int-opt"));
+                assertNull(options.get("null-opt"));
                 assertFalse(options.enabled("bool-flag"));
             })
         .run();

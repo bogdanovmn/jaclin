@@ -26,7 +26,8 @@ class ApacheCLIUserInputParser implements CLIUserInputParser {
                     .map(opt -> new RuntimeOption(opt, cmdLine.getOptionValues(opt.getName())))
                     .collect(
                         Collectors.toMap(RuntimeOption::name, Function.identity())
-                    )
+                    ),
+                definedOptions.stream().map(Option::getName).collect(Collectors.toSet())
             );
         } catch (ParseException e) {
             throw new ArgumentsParsingException(e.getMessage());
