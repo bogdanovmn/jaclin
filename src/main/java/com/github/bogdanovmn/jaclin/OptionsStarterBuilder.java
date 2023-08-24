@@ -7,5 +7,5 @@ public interface OptionsStarterBuilder {
 
     <E extends Enum<E>> OptionsInProgressBuilder enumArg(String name, String description, Class<E> type);
 
-    OptionsInProgressBuilder flag(String name, String description);
+    FlagOptionInProgressBuilder flag(String name, String description);
 }

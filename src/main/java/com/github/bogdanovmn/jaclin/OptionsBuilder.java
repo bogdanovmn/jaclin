@@ -68,7 +68,7 @@ class OptionsBuilder implements OptionsInProgressBuilder {
         return this;
     }
 
-    public OptionsInProgressBuilder flag(String name, String description) {
+    public FlagOptionInProgressBuilder flag(String name, String description) {
         String shortName = initNewOption(name);
         currentOption = Option.builder()
             .name(name)
@@ -76,7 +76,7 @@ class OptionsBuilder implements OptionsInProgressBuilder {
             .description(description)
             .isRequired(false)
             .type(Boolean.class);
-        return this;
+        return new FlagOptionBuilder(this);
     }
 
     public OptionsInProgressBuilder hasShortName(String shortName) {

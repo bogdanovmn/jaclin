@@ -19,6 +19,8 @@ class Option {
     @NonNull
     Class<?> type;
 
+    public static class OptionBuilder {} // javadoc generation workaround
+
     boolean isFlag() {
         return type.equals(Boolean.class);
     }
