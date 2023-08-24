@@ -7,7 +7,7 @@ import static org.junit.Assert.assertEquals;
 
 public class CLIRestrictionsAtLeastOneShouldBeUsedTest {
     @Test(expected = IllegalStateException.class)
-    public void shouldRaiseAnExceptionOnAbsenceOfAtLeastOneRequiredOption() {
+    public void shouldRaiseAnExceptionOnAbsenceOfAtLeastOneRequiredOption() throws Exception {
         try {
             new CLI("app-name", "description")
                 .withOptions()
@@ -25,7 +25,7 @@ public class CLIRestrictionsAtLeastOneShouldBeUsedTest {
     }
 
     @Test
-    public void shouldNotRaiseAnExceptionIfAtLeastOneRequiredOptionIsDefined() {
+    public void shouldNotRaiseAnExceptionIfAtLeastOneRequiredOptionIsDefined() throws Exception {
         new CLI("app-name", "description")
             .withOptions()
                 .strArg("integer-opt", "some integer arg")
@@ -40,7 +40,7 @@ public class CLIRestrictionsAtLeastOneShouldBeUsedTest {
     }
 
     @Test(expected = IllegalStateException.class)
-    public void shouldRaiseAnExceptionOnUnknownAtLeastOneRequiredOption() {
+    public void shouldRaiseAnExceptionOnUnknownAtLeastOneRequiredOption() throws Exception {
         try {
             new CLI("app-name", "description")
                 .withRequiredOptions()

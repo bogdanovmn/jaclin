@@ -11,7 +11,7 @@ public class CLIBuilderEnumTest {
     enum EnumExample { FOO, BAR, BAZ }
 
     @Test
-    public void shouldHandleEnumOption() {
+    public void shouldHandleEnumOption() throws Exception {
         new CLI("app-name", "description")
             .withOptions()
             .enumArg("enum", "enum value", EnumExample.class)
@@ -27,7 +27,7 @@ public class CLIBuilderEnumTest {
     }
 
     @Test
-    public void shouldHandleEnumOptionInDifferentCase() {
+    public void shouldHandleEnumOptionInDifferentCase() throws Exception {
         new CLI("app-name", "description")
             .withOptions()
                 .enumArg("enum", "enum value", EnumExample.class)

@@ -13,11 +13,17 @@ public class CLIUsageOutputTest {
     @Test
     public void shouldCreateDescriptionForEnumOption() {
         String[] lines = new SystemOutputCapture(
-            () -> new CLI("app-name", "description")
-                .withOptions()
-                    .enumArg("enum", "enum value loooooonnnngggggg loooooonnnngggggg loooooonnnngggggg string", EnumExample.class)
-                .withEntryPoint(options -> {})
-            .run("-h")
+            () -> {
+                try {
+                    new CLI("app-name", "description")
+                        .withOptions()
+                            .enumArg("enum", "enum value loooooonnnngggggg loooooonnnngggggg loooooonnnngggggg string", EnumExample.class)
+                        .withEntryPoint(options -> {})
+                    .run("-h");
+                } catch (Exception e) {
+                    throw new RuntimeException(e);
+                }
+            }
         ).outputOfExecution();
 
         assertEquals("output lines count", 5, lines.length);
@@ -28,13 +34,19 @@ public class CLIUsageOutputTest {
     @Test
     public void shouldNotHaveConflictWithHelpOptionName() {
         String[] lines = new SystemOutputCapture(
-            () -> new CLI("app-name", "description")
-                .withOptions()
-                    .flag("home", "home opt descr")
-                .withEntryPoint(options -> {
-                    assertEquals("foo", options.get("enum"));
-                })
-            .run("-h")
+            () -> {
+                try {
+                    new CLI("app-name", "description")
+                        .withOptions()
+                            .flag("home", "home opt descr")
+                        .withEntryPoint(options -> {
+                            assertEquals("foo", options.get("enum"));
+                        })
+                    .run("-h");
+                } catch (Exception e) {
+                    throw new RuntimeException(e);
+                }
+            }
         ).outputOfExecution();
 
         assertEquals("output lines count", 4, lines.length);
@@ -45,13 +57,19 @@ public class CLIUsageOutputTest {
     @Test
     public void shouldPrintOptionsInNaturalOrder() {
         String[] lines = new SystemOutputCapture(
-            () -> new CLI("app-name", "description")
-                .withOptions()
-                    .strArg("zoo", "blabla")
-                    .strArg("bar", "roflmao")
-                    .strArg("foo", "yadayada")
-                .withEntryPoint(options -> {})
-            .run("-h")
+            () -> {
+                try {
+                    new CLI("app-name", "description")
+                        .withOptions()
+                            .strArg("zoo", "blabla")
+                            .strArg("bar", "roflmao")
+                            .strArg("foo", "yadayada")
+                        .withEntryPoint(options -> {})
+                    .run("-h");
+                } catch (Exception e) {
+                    throw new RuntimeException(e);
+                }
+            }
         ).outputOfExecution();
 
         assertEquals("output lines count", 6, lines.length);

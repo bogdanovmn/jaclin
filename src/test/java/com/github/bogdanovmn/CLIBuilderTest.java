@@ -1,5 +1,6 @@
 package com.github.bogdanovmn;
 
+import com.github.bogdanovmn.jaclin.ArgumentsParsingException;
 import com.github.bogdanovmn.jaclin.CLI;
 import com.github.bogdanovmn.test.SystemOutputCapture;
 import org.junit.Test;
@@ -13,7 +14,7 @@ import static org.junit.Assert.assertTrue;
 
 public class CLIBuilderTest {
     @Test
-    public void shouldHandleOptions() {
+    public void shouldHandleOptions() throws Exception {
         new CLI("app", "app description")
             .withOptions()
                 .strArg("integer-opt", "source arg description")
@@ -30,7 +31,7 @@ public class CLIBuilderTest {
     }
 
     @Test
-    public void shouldHandleDefaults() {
+    public void shouldHandleDefaults() throws Exception {
         new CLI("app", "app description")
             .withOptions()
                 .strArg("str-opt", "source arg description").hasDefault("123")
@@ -72,7 +73,7 @@ public class CLIBuilderTest {
     }
 
     @Test(expected = RuntimeException.class)
-    public void shouldHandleDuplicatedShortOption() {
+    public void shouldHandleDuplicatedShortOption() throws Exception {
         try {
             new CLI("app", "app description")
                 .withOptions()
@@ -87,7 +88,7 @@ public class CLIBuilderTest {
     }
 
     @Test(expected = RuntimeException.class)
-    public void shouldHandleDuplicatedOption() {
+    public void shouldHandleDuplicatedOption() throws Exception {
         try {
             new CLI("app", "app description")
                 .withOptions()
@@ -101,8 +102,8 @@ public class CLIBuilderTest {
         }
     }
 
-    @Test(expected = RuntimeException.class)
-    public void shouldHandleRequiredOption() {
+    @Test(expected = ArgumentsParsingException.class)
+    public void shouldHandleRequiredOption() throws Exception {
         try {
             new CLI("app", "app description")
                 .withRequiredOptions()
@@ -111,14 +112,14 @@ public class CLIBuilderTest {
                     .flag("bool-flag", "bool-flag description")
                 .withEntryPoint(options -> {})
             .run("-b");
-        } catch (RuntimeException ex) {
+        } catch (ArgumentsParsingException ex) {
             assertEquals("Missing required option: i", ex.getMessage());
             throw ex;
         }
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void shouldFailOnOptionDifferentType() {
+    public void shouldFailOnOptionDifferentType() throws Exception {
         try {
             new CLI("app", "app description")
                 .withOptions()
@@ -132,7 +133,7 @@ public class CLIBuilderTest {
     }
 
     @Test
-    public void shouldHandleOptionWithMultiValue() {
+    public void shouldHandleOptionWithMultiValue() throws Exception {
         new CLI("app", "app description")
             .withOptions()
                 .strArg("integer-opt", "source arg description")

@@ -9,7 +9,7 @@ import static org.junit.Assert.assertEquals;
 
 public class CLIRestrictionsMutualExclusionsTest {
     @Test
-    public void shouldHandleMutualExclusions() {
+    public void shouldHandleMutualExclusions() throws Exception {
         new CLI("app-name", "description")
             .withOptions()
                 .strArg("a-opt", "a option description")
@@ -23,7 +23,7 @@ public class CLIRestrictionsMutualExclusionsTest {
     }
 
     @Test(expected = IllegalStateException.class)
-    public void shouldFailOnMutualExclusions() {
+    public void shouldFailOnMutualExclusions() throws Exception {
         try {
             new CLI("app-name", "description")
                 .withOptions()
@@ -41,7 +41,7 @@ public class CLIRestrictionsMutualExclusionsTest {
     }
 
     @Test(expected = IllegalStateException.class)
-    public void shouldFailOnMutualExclusionsGroup() {
+    public void shouldFailOnMutualExclusionsGroup() throws Exception {
         try {
             new CLI("app-name", "description")
                 .withOptions()
@@ -59,7 +59,7 @@ public class CLIRestrictionsMutualExclusionsTest {
     }
 
     @Test(expected = IllegalStateException.class)
-    public void shouldFailOnRequiredOptionInMutualExclusions() {
+    public void shouldFailOnRequiredOptionInMutualExclusions() throws Exception {
         try {
             new CLI("app-name", "description")
                 .withRequiredOptions()
@@ -77,7 +77,7 @@ public class CLIRestrictionsMutualExclusionsTest {
     }
 
     @Test(expected = IllegalStateException.class)
-    public void shouldFailOnRequiredOptionInMutualExclusionsGroup() {
+    public void shouldFailOnRequiredOptionInMutualExclusionsGroup() throws Exception {
         try {
             new CLI("app-name", "description")
                 .withOptions()
@@ -96,7 +96,7 @@ public class CLIRestrictionsMutualExclusionsTest {
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void shouldFailOnSingleOptionInMutualExclusions() {
+    public void shouldFailOnSingleOptionInMutualExclusions() throws Exception {
         try {
             new CLI("app-name", "description")
                 .withOptions()
@@ -113,7 +113,7 @@ public class CLIRestrictionsMutualExclusionsTest {
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void shouldFailOnOptionDuplicationInMutualExclusionsGroup() {
+    public void shouldFailOnOptionDuplicationInMutualExclusionsGroup() throws Exception {
         try {
             new CLI("app-name", "description")
                 .withRequiredOptions()

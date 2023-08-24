@@ -8,7 +8,7 @@ import static org.junit.Assert.assertTrue;
 
 public class CLIRestrictionsDependenciesTest {
     @Test
-    public void shouldHandleAllDependencies() {
+    public void shouldHandleAllDependencies() throws Exception {
         new CLI("app-name", "description")
             .withOptions()
             .strArg("integer-opt", "integer option description")
@@ -24,7 +24,7 @@ public class CLIRestrictionsDependenciesTest {
     }
 
     @Test(expected = IllegalStateException.class)
-    public void shouldHandleRequiredOption() {
+    public void shouldHandleRequiredOption() throws Exception {
         try {
             new CLI("app-name", "description")
                 .withOptions()
@@ -41,7 +41,7 @@ public class CLIRestrictionsDependenciesTest {
     }
 
     @Test(expected = IllegalStateException.class)
-    public void shouldFailOnUnknownOption() {
+    public void shouldFailOnUnknownOption() throws Exception {
         try {
             new CLI("app-name", "description")
                 .withOptions()

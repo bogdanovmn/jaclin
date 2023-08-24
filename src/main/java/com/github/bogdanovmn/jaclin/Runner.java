@@ -1,5 +1,5 @@
 package com.github.bogdanovmn.jaclin;
 
 public interface Runner {
-    void run(String... args);
+    void run(String... args) throws Exception;
 }

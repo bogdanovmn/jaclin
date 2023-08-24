@@ -1,7 +1,6 @@
 package com.github.bogdanovmn.jaclin;
 
 import java.util.List;
-import java.util.function.Consumer;
 
 public class CLI implements CLIBuilder {
     private final String executableName;
@@ -33,7 +32,7 @@ public class CLI implements CLIBuilder {
     }
 
     @Override
-    public Runner withEntryPoint(Consumer<ParsedOptions> task) {
+    public Runner withEntryPoint(EntryPoint task) {
         List<Option> definedOptions = optionsBuilder.build();
         return CLIInstance.builder()
             .definedOptions(definedOptions)
@@ -45,4 +44,7 @@ public class CLI implements CLIBuilder {
         .build();
     }
 
+    public interface EntryPoint {
+        void execute(ParsedOptions options) throws Exception;
+    }
 }

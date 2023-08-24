@@ -12,7 +12,7 @@ public class CLIExampleTest {
     enum MyEnum { FOO, BAR, BAZ }
 
     @Test
-    public void shouldHandleOptions() {
+    public void shouldHandleOptions() throws Exception {
         new CLI("app-name", "description")
             .withRequiredOptions()
                 .strArg("a-opt", "description")
@@ -36,6 +36,6 @@ public class CLIExampleTest {
                     assertFalse(options.enabled("y-opt-unknown"));
                 }
             )
-            .run("-a", "a1", "-x", "123", "-e", "FOO", "-y");
+        .run("-a", "a1", "-x", "123", "-e", "FOO", "-y");
     }
 }

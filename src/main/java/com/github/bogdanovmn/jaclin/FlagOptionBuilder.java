@@ -2,12 +2,6 @@ package com.github.bogdanovmn.jaclin;
 
 import lombok.RequiredArgsConstructor;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.function.Consumer;
-import java.util.stream.Collectors;
-
 @RequiredArgsConstructor
 class FlagOptionBuilder implements FlagOptionInProgressBuilder {
     private final OptionsBuilder originalBuilder;
@@ -62,7 +56,7 @@ class FlagOptionBuilder implements FlagOptionInProgressBuilder {
     }
 
     @Override
-    public Runner withEntryPoint(Consumer<ParsedOptions> task) {
+    public Runner withEntryPoint(CLI.EntryPoint task) {
         return originalBuilder.withEntryPoint(task);
     }
 }
