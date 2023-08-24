@@ -30,7 +30,7 @@ class FlagOptionBuilder implements FlagOptionInProgressBuilder {
 
     @Override
     public FlagOptionInProgressBuilder hasShortName(String shortName) {
-        originalBuilder.hasShortName(shortName);
+        originalBuilder.withShortName(shortName);
         return this;
     }
 

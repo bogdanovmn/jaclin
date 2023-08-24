@@ -2,9 +2,9 @@ package com.github.bogdanovmn.jaclin;
 
 public interface OptionsInProgressBuilder extends OptionsStarterBuilder, CLIBuilder {
 
-    OptionsInProgressBuilder hasShortName(String shortName);
+    OptionsInProgressBuilder withShortName(String shortName);
 
-    OptionsInProgressBuilder hasDefault(Object value);
+    OptionsInProgressBuilder withDefault(Object value);
 
     OptionsInProgressBuilder asList();
 

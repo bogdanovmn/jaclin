@@ -18,7 +18,7 @@ public class CLIBuilderTest {
         new CLI("app", "app description")
             .withOptions()
                 .strArg("integer-opt", "source arg description")
-                .intArg("integer-opt2", "source arg description").hasShortName("y")
+                .intArg("integer-opt2", "source arg description").withShortName("y")
                 .flag("bool-flag", "bool-flag description")
                 .flag("bool-flag2", "bool-flag2 description").hasShortName("z")
             .withEntryPoint(options -> {
@@ -34,8 +34,8 @@ public class CLIBuilderTest {
     public void shouldHandleDefaults() throws Exception {
         new CLI("app", "app description")
             .withOptions()
-                .strArg("str-opt", "source arg description").hasDefault("123")
-                .intArg("int-opt", "source arg description").hasDefault(777)
+                .strArg("str-opt", "source arg description").withDefault("123")
+                .intArg("int-opt", "source arg description").withDefault(777)
                 .intArg("null-opt", "source arg description")
                 .flag("bool-flag", "bool-flag description")
             .withEntryPoint(options -> {
@@ -54,10 +54,10 @@ public class CLIBuilderTest {
                 new CLI("app", "app description")
                     .withOptions()
                         .strArg("str-opt", "source arg description")
-                            .hasDefault("123")
+                            .withDefault("123")
                         .intArg("int-opt", "source arg description")
-                            .hasShortName("y")
-                            .hasDefault(777)
+                            .withShortName("y")
+                            .withDefault(777)
                         .flag("bool-flag", "bool-flag description")
                     .withEntryPoint(options -> {})
                 .run("-h");
@@ -78,7 +78,7 @@ public class CLIBuilderTest {
             new CLI("app", "app description")
                 .withOptions()
                     .strArg("integer-opt", "source arg description")
-                    .strArg("integer-opt2", "source 2 arg description").hasShortName("i")
+                    .strArg("integer-opt2", "source 2 arg description").withShortName("i")
                 .withEntryPoint(options -> {})
             .run("-b");
         } catch (RuntimeException ex) {

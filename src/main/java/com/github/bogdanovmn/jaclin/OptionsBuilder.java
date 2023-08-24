@@ -78,7 +78,7 @@ class OptionsBuilder implements OptionsInProgressBuilder {
         return new FlagOptionBuilder(this);
     }
 
-    public OptionsInProgressBuilder hasShortName(String shortName) {
+    public OptionsInProgressBuilder withShortName(String shortName) {
         uniqShortNames.remove(
             currentOption.build().getShortName()
         );
@@ -87,7 +87,7 @@ class OptionsBuilder implements OptionsInProgressBuilder {
         return this;
     }
 
-    public OptionsInProgressBuilder hasDefault(Object value) {
+    public OptionsInProgressBuilder withDefault(Object value) {
         currentOption.defaultValue(value);
         return this;
     }

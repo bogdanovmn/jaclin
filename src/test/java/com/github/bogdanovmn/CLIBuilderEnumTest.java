@@ -16,7 +16,7 @@ public class CLIBuilderEnumTest {
             .withOptions()
             .enumArg("enum", "enum value", EnumExample.class)
             .enumArg("enum2", "enum2 value", EnumExample.class)
-                .hasDefault(EnumExample.BAR)
+                .withDefault(EnumExample.BAR)
             .withEntryPoint(options -> {
                 assertEquals(EnumExample.FOO, options.getEnum("enum"));
                 assertEquals("FOO", options.getEnumAsRawString("enum"));
@@ -45,7 +45,7 @@ public class CLIBuilderEnumTest {
                 new CLI("app-name", "description")
                     .withOptions()
                         .enumArg("enum", "enum value", EnumExample.class)
-                            .hasDefault(EnumExample.BAZ)
+                            .withDefault(EnumExample.BAZ)
                     .withEntryPoint(options -> {
                         assertEquals("foo", options.get("enum"));
                     })
