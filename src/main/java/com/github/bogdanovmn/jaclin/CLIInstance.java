@@ -2,6 +2,7 @@ package com.github.bogdanovmn.jaclin;
 
 import lombok.Builder;
 
+import java.util.Arrays;
 import java.util.List;
 
 @Builder
@@ -13,12 +14,25 @@ class CLIInstance implements Runner {
 
     @Override
     public void run(String... args) throws Exception {
-        ParsedOptions runtimeOptions = new ApacheCLIUserInputParser(definedOptions).parsedOptions(args);
-        optionsRestrictions.validate(definedOptions, runtimeOptions);
-        if (runtimeOptions.has("help")) {
+        if (usageFlagSpecified(args)) {
             usageRender.print();
-        } else {
-            task.execute(runtimeOptions);
+            return;
         }
+        try {
+            ParsedOptions runtimeOptions = new ApacheCLIUserInputParser(definedOptions).parsedOptions(args);
+            if (runtimeOptions.has("help")) {
+                usageRender.print();
+            } else {
+                optionsRestrictions.validate(definedOptions, runtimeOptions);
+                task.execute(runtimeOptions);
+            }
+        } catch (ArgumentsParsingException ex) {
+            usageRender.print();
+            System.err.printf("ERROR! %s", ex.getMessage());
+        }
+    }
+
+    private boolean usageFlagSpecified(String... args) {
+        return Arrays.stream(args).anyMatch(a -> "-h".equals(a) || "--help".equals(a));
     }
 }

@@ -13,12 +13,16 @@ public class SystemOutputCapture {
     public String[] outputOfExecution() {
         ByteArrayOutputStream outContent = new ByteArrayOutputStream();
         PrintStream originalOut = System.out;
-        System.setOut(new PrintStream(outContent));
+        PrintStream originalErr = System.err;
+        PrintStream outCaptureStream = new PrintStream(outContent);
+        System.setOut(outCaptureStream);
+        System.setErr(outCaptureStream);
 
         task.run();
 
         String[] lines = outContent.toString().split("\n");
         System.setOut(originalOut);
+        System.setErr(originalErr);
 
         Arrays.stream(lines).forEach(System.out::println);
 

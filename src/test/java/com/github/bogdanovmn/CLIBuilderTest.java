@@ -102,20 +102,29 @@ public class CLIBuilderTest {
         }
     }
 
-    @Test(expected = ArgumentsParsingException.class)
-    public void shouldHandleRequiredOption() throws Exception {
-        try {
-            new CLI("app", "app description")
-                .withRequiredOptions()
-                    .strArg("integer-opt", "source arg description")
-                .withOptions()
-                    .flag("bool-flag", "bool-flag description")
-                .withEntryPoint(options -> {})
-            .run("-b");
-        } catch (ArgumentsParsingException ex) {
-            assertEquals("Missing required option: i", ex.getMessage());
-            throw ex;
-        }
+    @Test
+    public void shouldHandleRequiredOption() {
+        String[] lines = new SystemOutputCapture(
+            () -> {
+                try {
+                    new CLI("app", "app description")
+                        .withRequiredOptions()
+                            .strArg("integer-opt", "source arg description")
+                        .withOptions()
+                            .flag("bool-opt", "bool-opt description")
+                        .withEntryPoint(options -> {})
+                    .run("-b");
+                } catch (Exception e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        ).outputOfExecution();
+
+        assertEquals("output lines count", 6, lines.length);
+        assertTrue("integer-opt position", lines[2].contains("--integer-opt"));
+        assertTrue("bool-opt position", lines[3].contains("--bool-opt"));
+        assertTrue("help position is 4", lines[4].contains("--help"));
+        assertTrue("help position is 4", lines[5].contains("ERROR! Missing required option: i"));
     }
 
     @Test(expected = IllegalArgumentException.class)

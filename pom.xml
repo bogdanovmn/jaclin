@@ -6,7 +6,7 @@
 
     <groupId>com.github.bogdanovmn.jaclin</groupId>
     <artifactId>jaclin</artifactId>
-    <version>4.0.1</version>
+    <version>4.0.2</version>
     <name>Jaclin</name>
     <description>Command-line arguments handling fluent API</description>
     <url>http://github.com/bogdanovmn/jaclin</url>

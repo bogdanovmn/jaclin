@@ -78,4 +78,25 @@ public class CLIUsageOutputTest {
         assertTrue("foo position is 3", lines[4].contains("--foo"));
         assertTrue("help position is 4", lines[5].contains("--help"));
     }
+
+    @Test
+    public void shouldPrintUsageEvenRequiredArgNotSpecified() {
+        String[] lines = new SystemOutputCapture(
+            () -> {
+                try {
+                    new CLI("app-name", "description")
+                        .withRequiredOptions()
+                            .strArg("zoo", "blabla")
+                        .withEntryPoint(options -> {})
+                    .run("-h");
+                } catch (Exception e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        ).outputOfExecution();
+
+        assertEquals("output lines count", 4, lines.length);
+        assertTrue("zoo position is 1", lines[2].contains("--zoo"));
+        assertTrue("help position is 4", lines[3].contains("--help"));
+    }
 }
