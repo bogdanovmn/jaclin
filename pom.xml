@@ -4,12 +4,12 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>com.github.bogdanovmn.cmdline</groupId>
-    <artifactId>cmdline-app</artifactId>
-    <version>3.1.1</version>
-    <name>java-cmdline-app</name>
-    <description>Java command line application arguments helper</description>
-    <url>http://github.com/bogdanovmn/java-cmdline-app</url>
+    <groupId>com.github.bogdanovmn.jaclin</groupId>
+    <artifactId>jaclin</artifactId>
+    <version>4.0.1</version>
+    <name>Jaclin</name>
+    <description>Command-line arguments handling fluent API</description>
+    <url>http://github.com/bogdanovmn/jaclin</url>
 
     <properties>
         <encoding>UTF-8</encoding>
@@ -34,9 +34,9 @@
     </developers>
 
     <scm>
-        <connection>scm:git:git://github.com/bogdanovmn/java-cmdline-app.git</connection>
-        <developerConnection>scm:git:ssh://github.com:bogdanovmn/java-cmdline-app.git</developerConnection>
-        <url>http://github.com/bogdanovmn/java-cmdline-app</url>
+        <connection>scm:git:git://github.com/bogdanovmn/jaclin.git</connection>
+        <developerConnection>scm:git:ssh://github.com:bogdanovmn/jaclin.git</developerConnection>
+        <url>http://github.com/bogdanovmn/jaclin</url>
     </scm>
 
     <dependencies>
