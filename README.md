@@ -54,7 +54,7 @@ public class App {
         new CLI("my-jar-name", "My program does ...")
             .withRequiredOptions()
                 .strArg("mandatory-option", "...description of the option...")
-                .withShortName("m") // option's short name definition (by default, it is generating automatically)
+                    .withShortName("m") // option's short name definition (by default, it is generating automatically)
             .withOptions() // Not required options
                 .strArg("some-option", "...description of the option...")
                 // Optional flag (without a value)
