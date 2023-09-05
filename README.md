@@ -1,8 +1,4 @@
-
-
-[![Maven Central](
-https://maven-badges.herokuapp.com/maven-central/com.github.bogdanovmn.jaclin/jaclin/badge.svg
-)]( https://maven-badges.herokuapp.com/maven-central/com.github.bogdanovmn.jaclin/jaclin)
+<p align="center"><img src="logo.png" alt="jaclin"></p>
 
 # Jaclin: why another CLI-library?
 
@@ -36,11 +32,14 @@ This library aims to work with command line arguments in a fluent manner with ad
 # How to use it
 
 ## 1. Get the latest dependency
+[![Maven Central](
+https://maven-badges.herokuapp.com/maven-central/com.github.bogdanovmn.jaclin/jaclin/badge.svg
+)]( https://maven-badges.herokuapp.com/maven-central/com.github.bogdanovmn.jaclin/jaclin)
 ```xml
 <dependency>
     <groupId>com.github.bogdanovmn.jaclin</groupId>
     <artifactId>jaclin</artifactId>
-    <version>4.0.1</version>
+    <version>4.0.2</version>
 </dependency>
 ```
 
