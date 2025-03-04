@@ -35,6 +35,7 @@ This library aims to work with command line arguments in a fluent manner with ad
 [![Maven Central](
 https://maven-badges.herokuapp.com/maven-central/com.github.bogdanovmn.jaclin/jaclin/badge.svg
 )]( https://maven-badges.herokuapp.com/maven-central/com.github.bogdanovmn.jaclin/jaclin)
+[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Fbogdanovmn%2Fjaclin.svg?type=shield)](https://app.fossa.com/projects/git%2Bgithub.com%2Fbogdanovmn%2Fjaclin?ref=badge_shield)
 ```xml
 <dependency>
     <groupId>com.github.bogdanovmn.jaclin</groupId>
@@ -288,3 +289,6 @@ INPX file browser
   -ss,--show-statistic                 show books statistic
   -h,--help                            show this message
 ```
+
+## License
+[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Fbogdanovmn%2Fjaclin.svg?type=large)](https://app.fossa.com/projects/git%2Bgithub.com%2Fbogdanovmn%2Fjaclin?ref=badge_large)
